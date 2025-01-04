@@ -378,7 +378,7 @@ InitializeScript()
         while wait() do
         if getgenv().config.getgenv().config["Stop When Have God's Chaile or Dark Key"] then
             if game.Players.LocalPlayer.Backpack:FindFirstChild("Fist of Darkness") or game.Players.LocalPlayer.Character:FindFirstChild("Fist of Darkness") or game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") or game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice") then
-                getgenv().config.ChestFarm["Start Farm Chest"] = false
+                getgenv().config.ChestFarm["Start Farm Chest"] = true
                 end
             end
         end

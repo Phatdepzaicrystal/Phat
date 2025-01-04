@@ -27,7 +27,7 @@ end
             game.Players.LocalPlayer.Character.Animate.Disabled = true
             wait()
             loadstring(
-                Game:HttpGet("https://raw.githubusercontent.com/JewhisKids/NewFreeScript/main/Misc/SuperFpsBoost.lua")
+                Game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/FPSboost.lua")
             )()
             while wait() do
                 setfpscap(60)
@@ -329,7 +329,7 @@ local function UpdateStats()
     
     local chestCount = 0
     for _, v in pairs(game.workspace:GetChildren()) do
-        if string.find(v.Name, "Chests") and v:IsA("Part") then
+        if string.find(v.Name, "Chest") and v:IsA("Part") then
             chestCount = chestCount + 1
         end
     end

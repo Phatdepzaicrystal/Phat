@@ -27,7 +27,7 @@ end
             game.Players.LocalPlayer.Character.Animate.Disabled = true
             wait()
             loadstring(
-                Game:HttpGet("https://raw.githubusercontent.com/JewhisKids/NewFreeScript/main/Misc/SuperFpsBoost.lua")
+                Game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/FPSboost.lua")
             )()
             while wait() do
                 setfpscap(60)

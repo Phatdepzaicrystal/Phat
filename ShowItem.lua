@@ -329,7 +329,7 @@ local function UpdateStats()
     
     local chestCount = 0
     for _, v in pairs(game.workspace:GetChildren()) do
-        if string.find(v.Name, "Chest") and v:IsA("Part") then
+        if string.find(v.Name, "Chests") and v:IsA("Part") then
             chestCount = chestCount + 1
         end
     end

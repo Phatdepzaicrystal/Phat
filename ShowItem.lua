@@ -1,417 +1,224 @@
---//Config
-if game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam") then
-    repeat task.wait()
-        if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main").ChooseTeam.Visible == true then
-            if getgenv().config.Setting["Team"] == "Marines" then
-                for i, v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container["Marines"].Frame.TextButton.Activated)) do
-                    for a, b in pairs(getconnections(game:GetService("UserInputService").TouchTapInWorld)) do
-                       b:Fire() 
+local cac = require(game:GetService("Players").LocalPlayer.PlayerGui.Main.UIController.Inventory)
+local Inventory = game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("getInventory")
+local Items = {}
+local RaityLevel = {"Mythical","Legendary","Rare","Uncommon","Common"}
+local RaityColor =  {
+    ["Common"] = Color3.fromRGB(179, 179, 179),
+    ["Uncommon"] = Color3.fromRGB(92, 140, 211),
+    ["Rare"] =  Color3.fromRGB(140, 82, 255),
+    ["Legendary"] = Color3.fromRGB(213, 43, 228) ,
+    ["Mythical"] =  Color3.fromRGB(238, 47, 50)
+}
+function GetRaity(color)
+    for k,v in pairs(RaityColor) do 
+        if v==color then return k end
+    end
+end
+
+for k,v in pairs(Inventory) do 
+    Items[v.Name] = v
+end
+
+local total = #getupvalue(cac.UpdateRender,4)
+local rac = {}
+local allitem = {}
+local total2 = 0
+while total2<total do 
+    local i = 0
+    while i < 25000 and total2<total do 
+        game:GetService("Players").LocalPlayer.PlayerGui.Main.InventoryContainer.Right.Content.ScrollingFrame.CanvasPosition = Vector2.new(0,i)
+        for k,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Main.InventoryContainer.Right.Content.ScrollingFrame.Frame:GetChildren()) do 
+            if v:IsA("Frame") and not rac[v.ItemName.Text] and v.ItemName.Visible==true then 
+                local vaihuhu = GetRaity(v.Background.BackgroundColor3)
+                if vaihuhu then
+                    print("Rac")
+                    if not allitem[vaihuhu] then 
+                        allitem[vaihuhu] = {}
                     end
-                    v.Function()
-                end 
-            else
-                for i, v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container["Pirates"].Frame.TextButton.Activated)) do
-                    for a, b in pairs(getconnections(game:GetService("UserInputService").TouchTapInWorld)) do
-                       b:Fire() 
-                    end
-                    v.Function()
-                end 
+                    table.insert(allitem[vaihuhu],v:Clone())
+                end
+                total2=total2+1
+                rac[v.ItemName.Text] = true
             end
         end
-    until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
+        i=i+20
+    end
+    wait()
 end
-    spawn(function()
-        while wait() do
-                if getgenv().config.Setting["Boots FPS"] then
-            game.Players.LocalPlayer.Character.Pants:Destroy()
-            game.Players.LocalPlayer.Character.Animate.Disabled = true
-            wait()
-            loadstring(
-                Game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/FPSboost.lua")
-            )()
-            while wait() do
-                setfpscap(60)
-                wait()
-                setfpscap(59)
+function GetXY(vec) 
+    return vec*100
+end
+
+local tvk = Instance.new("UIListLayout")
+tvk.FillDirection = Enum.FillDirection.Vertical
+tvk.SortOrder = 2
+tvk.Padding = UDim.new(0,20)
+
+local Left = Instance.new("Frame",game.Players.LocalPlayer.PlayerGui.BubbleChat)
+Left.BackgroundTransparency = 1
+Left.Size = UDim2.new(.5,0,1,0) 
+tvk.Parent = Left
+
+local Right = Instance.new("Frame",game.Players.LocalPlayer.PlayerGui.BubbleChat)
+Right.BackgroundTransparency = 1
+Right.Size = UDim2.new(.5,0,1,0) 
+Right.Position = UDim2.new(.6,0,0,0)
+Right.Name = "Right"
+tvk:Clone().Parent = Right
+local bucac
+for k,v in pairs(allitem) do 
+    local cac = Instance.new("Frame",Left)
+    cac.BackgroundTransparency = 1
+    cac.Size = UDim2.new(1,0,0,0) 
+    cac.LayoutOrder = table.find(RaityLevel,k)
+
+    local cac2 = Instance.new("Frame",Right)
+    cac2.BackgroundTransparency = 1
+    cac2.Size = UDim2.new(1,0,0,0) 
+    cac2.LayoutOrder = table.find(RaityLevel,k)
+ 
+
+    local tvk = Instance.new("UIGridLayout",cac)
+    tvk.CellPadding = UDim2.new(.005,0,.005,0)
+    tvk.CellSize =  UDim2.new(0,70,0,70)
+    tvk.FillDirectionMaxCells = 100
+    tvk.FillDirection = Enum.FillDirection.Horizontal
+
+    local ccc = tvk:Clone()
+    ccc.Parent = cac2
+    for k,v in pairs(v) do 
+        if Items[v.ItemName.Text] and Items[v.ItemName.Text].Mastery then 
+            if v.ItemLine2.Text~="Accessory" then 
+                bucac = v.ItemName:Clone()
+                bucac.BackgroundTransparency = 1
+                bucac.TextSize = 10
+                bucac.TextXAlignment  = 2
+                bucac.TextYAlignment  = 2
+                bucac.ZIndex  = 5
+                bucac.Text = Items[v.ItemName.Text].Mastery
+                bucac.Size = UDim2.new(.5,0,.5,0)
+                bucac.Position = UDim2.new(.5,0,.5,0)
+                bucac.Parent = v
+            end
+            v.Parent = cac
+        elseif v.ItemLine2.Text == "Blox Fruit" then 
+            v.Parent = cac2
+        end
+    end
+    cac.AutomaticSize = 2
+    cac2.AutomaticSize = 2
+end
+
+local MeleeG = Instance.new("Frame",Right)
+MeleeG.BackgroundTransparency = 1
+MeleeG.Size = UDim2.new(1,0,0,0) 
+MeleeG.LayoutOrder = table.find(RaityLevel,k)
+MeleeG.AutomaticSize=2
+MeleeG.LayoutOrder = 100
+local tvk = Instance.new("UIGridLayout",MeleeG)
+tvk.CellPadding = UDim2.new(.005,0,.005,0)
+tvk.CellSize =  UDim2.new(0,70,0,70)
+tvk.FillDirectionMaxCells = 100
+tvk.FillDirection = Enum.FillDirection.Horizontal
+local ListHuhu = {
+    ["Superhuman"] = Vector2.new(3,2),
+    ["DeathStep"] = Vector2.new(4,3),
+    ["ElectricClaw"] = Vector2.new(2,0),
+    ["SharkmanKarate"] = Vector2.new(0,0),
+    ["DragonTalon"] = Vector2.new(1,5),
+    ["Godhuman"] = "rbxassetid://10338473987"
+}
+local nguu = {}
+function GetNext() end
+local Listcaiditconmemayskidconcaca = {}
+local buda
+
+for k,v in pairs(ListHuhu) do
+    if game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buy"..k,true) == 1 then 
+        local huhu = Instance.new("ImageLabel",MeleeG)
+        if type(v)=="string" then 
+            huhu.Image = v
+        else
+            huhu.Image = "rbxassetid://9945562382"
+            huhu.ImageRectSize = Vector2.new(100,100)
+            huhu.ImageRectOffset = v*100
+        end 
+        Listcaiditconmemayskidconcaca[k] = huhu
+        table.insert(nguu,k)
+    end
+end
+buda = 1
+function TimKiemItemNehuhu(item)
+    for k,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do 
+        if v.Name:gsub(" ","") == item then 
+            return v
+        end
+    end
+end
+spawn(function() 
+    local a = #nguu
+    local bucu = 0
+    while bucu < a do 
+        for k,v in pairs(Listcaiditconmemayskidconcaca) do 
+            if not v:FindFirstChild("Ditme") then 
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buy"..k) 
+                wait(.1)
+                local v2 = TimKiemItemNehuhu(k)
+                if v2 then 
+                    v2:WaitForChild("Level")
+                    local Ditme = bucac:Clone()
+                    Ditme.Name = "Ditme"
+                    Ditme.BackgroundTransparency = 1
+                    Ditme.TextSize = 10
+                    Ditme.TextXAlignment  = 2
+                    Ditme.TextYAlignment  = 2
+                    Ditme.ZIndex  = 5
+                    Ditme.Text = v2.Level.Value
+                    Ditme.Size = UDim2.new(.5,0,.5,0)
+                    Ditme.Position = UDim2.new(.5,0,.5,0)
+                    Ditme.Parent = v
+                    bucu=bucu+1
                 end
             end
         end
-    end)
-
-spawn(function()
-    while wait() do
-        if getgenv().config.Setting["White Screen"] then
-            game:GetService("RunService"):Set3dRenderingEnabled(true)
-        end
+        wait()
     end
+
 end)
+game:GetService("Players").LocalPlayer.PlayerGui.Main.AwakeningToggler.Visible = true
+repeat wait() until game:GetService("Players").LocalPlayer.PlayerGui.Main.AwakeningToggler.TopContainer.Frame:FindFirstChild("Z")
+local rac = game:GetService("Players").LocalPlayer.PlayerGui.Main.AwakeningToggler:Clone()
+rac.LayoutOrder = 101
+game:GetService("Players").LocalPlayer.PlayerGui.Main.AwakeningToggler.Visible = true
 
-spawn(function()
-    while wait() do
-        if getgenv().config.Setting["Disabled Notify"] then
-            local player = game:GetService("Players").LocalPlayer
-            if player and player.PlayerGui then
-                local notifications = player.PlayerGui:FindFirstChild("Notifications")
-                if notifications then
-                    notifications:Destroy()
-                end
-            end
-        end
-    end
+rac.Parent = Right
+rac.Size = UDim2.new(1,0,0.3,0)
+function formatNumber(v)
+    return tostring(v):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+end
+local thieunang = game:GetService("Players").LocalPlayer.PlayerGui.Main.Fragments:Clone()
+thieunang.Parent = game:GetService("Players").LocalPlayer.PlayerGui.BubbleChat
+thieunang.Position = UDim2.new(0,6,0.85799,0)
+local n = formatNumber(game.Players.LocalPlayer.Data.Fragments.Value)
+thieunang.Text = "ƒ"..n
+print("Done")
+pcall(function() 
+    game:GetService("Players").LocalPlayer.PlayerGui.Main.MenuButton.Visible = true
+  -- game:GetService("Players").LocalPlayer.PlayerGui.Main.MenuButton:Destroy()
 end)
-
-
---//Code Ui
-local TweenService = game:GetService("TweenService")
-local CoreGui = game:GetService("CoreGui")
-local UserInputService = game:GetService("UserInputService")
-local StarterGui = game:GetService("StarterGui")
-local Players = game:GetService("Players")
-local TWEEN_TIME = 0.6
-local TWEEN_STYLE = Enum.EasingStyle.Quart
-local TWEEN_DIRECTION = Enum.EasingDirection.Out
-local SCREEN_WIDTH = workspace.CurrentCamera.ViewportSize.X
-local SCREEN_HEIGHT = workspace.CurrentCamera.ViewportSize.Y
-local Player = Players.LocalPlayer
-local oldBeli = 0
-local earnedBeli = 0
-local Converted = {}
-
-local isMinimized = false
-local isDragging = false
-
-local function FormatNumber(number)
-    return tostring(number):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
-end
-
-local function CreateSmoothCorner(instance, radius)
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, radius or 8)
-    corner.Parent = instance
-    return corner
-end
-
-local function CreateStroke(parent, color, thickness)
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = color or Color3.fromRGB(65, 65, 65)
-    stroke.Thickness = thickness or 1.5
-    stroke.Parent = parent
-    return stroke
-end
-
-local function CreateDropShadow(parent)
-    local shadow = Instance.new("ImageLabel")
-    shadow.Name = "Shadow"
-    shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    shadow.BackgroundTransparency = 1
-    shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    shadow.Size = UDim2.new(1, 47, 1, 47)
-    shadow.Image = "rbxassetid://6014261993"
-    shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    shadow.ImageTransparency = 0.5
-    shadow.Parent = parent
-    return shadow
-end
-
-local function CreateMainGui()
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "CatTaiHubUI"
-    ScreenGui.ResetOnSpawn = false
-    
-    Converted["_MainFrame"] = Instance.new("Frame")
-    Converted["_MainFrame"].Name = "MainFrame"
-    Converted["_MainFrame"].Size = UDim2.new(0, 350, 0, 300)
-    Converted["_MainFrame"].Position = UDim2.new(0, SCREEN_WIDTH - 400, 0, 50)
-    Converted["_MainFrame"].BackgroundColor3 = Color3.fromRGB(35, 35, 40)
-    Converted["_MainFrame"].Parent = ScreenGui
-    
-    CreateDropShadow(Converted["_MainFrame"])
-    CreateSmoothCorner(Converted["_MainFrame"], 12)
-    
-    local TitleBar = Instance.new("Frame")
-    TitleBar.Name = "TitleBar"
-    TitleBar.Size = UDim2.new(1, 0, 0, 40)
-    TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
-    TitleBar.Position = UDim2.new(0, 0, 0, 0)
-    TitleBar.Parent = Converted["_MainFrame"]
-    CreateSmoothCorner(TitleBar, 12)
-    
-    local TitleLogo = Instance.new("ImageLabel")
-    TitleLogo.Size = UDim2.new(0, 24, 0, 24)
-    TitleLogo.Position = UDim2.new(0, 10, 0.5, -12)
-    TitleLogo.BackgroundTransparency = 1
-    TitleLogo.Image = "rbxassetid://icon"
-    TitleLogo.Parent = TitleBar
-    
-    local TitleText = Instance.new("TextLabel")
-    TitleText.Size = UDim2.new(1, -100, 1, 0)
-    TitleText.Position = UDim2.new(0, 40, 0, 0)
-    TitleText.BackgroundTransparency = 1
-    TitleText.Font = Enum.Font.GothamBold
-    TitleText.Text = "Cáº¯t Tai Hub Auto Chest"
-    TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TitleText.TextSize = 16
-    TitleText.TextXAlignment = Enum.TextXAlignment.Left
-    TitleText.Parent = TitleBar
-    
-    local CloseButton = Instance.new("TextButton")
-    CloseButton.Size = UDim2.new(0, 30, 0, 30)
-    CloseButton.Position = UDim2.new(1, -40, 0, 5)
-    CloseButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    CloseButton.Text = "X"
-    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CloseButton.TextSize = 16
-    CloseButton.Parent = TitleBar
-    CreateSmoothCorner(CloseButton)
-    local MinimizeButton = Instance.new("TextButton")
-    MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-    MinimizeButton.Position = UDim2.new(1, -80, 0, 5)
-    MinimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    MinimizeButton.Text = "-"
-    MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    MinimizeButton.TextSize = 16
-    MinimizeButton.Parent = TitleBar
-    CreateSmoothCorner(MinimizeButton)
-
-    Converted["_Stats"] = Instance.new("Frame")
-    Converted["_Stats"].Name = "Stats"
-    Converted["_Stats"].Size = UDim2.new(1, -20, 0, 180)
-    Converted["_Stats"].Position = UDim2.new(0, 10, 0, 50)
-    Converted["_Stats"].BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    Converted["_Stats"].Parent = Converted["_MainFrame"]
-    
-    CreateSmoothCorner(Converted["_Stats"])
-    CreateStroke(Converted["_Stats"])
-    
-    local function CreateStatLabel(yPos)
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -20, 0, 30)
-        label.Position = UDim2.new(0, 10, 0, yPos)
-        label.Font = Enum.Font.GothamSemibold
-        label.TextColor3 = Color3.fromRGB(255, 255, 255)
-        label.TextSize = 14
-        label.TextXAlignment = Enum.TextXAlignment.Left
-        label.BackgroundTransparency = 1
-        label.Parent = Converted["_Stats"]
-        return label
+pcall(function() 
+    game:GetService("Players").LocalPlayer.PlayerGui.Main.HP.Visible = false
+    --game:GetService("Players").LocalPlayer.PlayerGui.Main.HP:Destroy()
+end)
+pcall(function() 
+    game:GetService("Players").LocalPlayer.PlayerGui.Main.Energy.Visible = false
+    --game:GetService("Players").LocalPlayer.PlayerGui.Main.Energy:Destroy()
+end)
+for k,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Main:GetChildren()) do 
+    if v:IsA("ImageButton") then 
+        v.Visible = false
     end
-    
-    Converted["_TimeLabel"] = CreateStatLabel(10)
-    Converted["_BeliLabel"] = CreateStatLabel(50)
-    Converted["_EarnedBeliLabel"] = CreateStatLabel(90)
-    Converted["_ChestLabel"] = CreateStatLabel(130)
-    
-    Converted["_Controls"] = Instance.new("Frame")
-    Converted["_Controls"].Name = "Controls"
-    Converted["_Controls"].Size = UDim2.new(1, -20, 0, 40)
-    Converted["_Controls"].Position = UDim2.new(0, 10, 0, 230)
-    Converted["_Controls"].BackgroundTransparency = 1
-    Converted["_Controls"].Parent = Converted["_MainFrame"]
-    
-    local function CreateButton(text, color, position)
-        local button = Instance.new("TextButton")
-        button.Size = UDim2.new(0.48, 0, 1, 0)
-        button.Position = position
-        button.BackgroundColor3 = color
-        button.Font = Enum.Font.GothamBold
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.TextSize = 14
-        button.Text = text
-        button.Parent = Converted["_Controls"]
-        
-        CreateSmoothCorner(button)
-        CreateStroke(button, color:Lerp(Color3.new(0, 0, 0), 0.2))
-        
-        local originalColor = color
-        button.MouseEnter:Connect(function()
-            TweenService:Create(button, TweenInfo.new(0.3), {
-                BackgroundColor3 = color:Lerp(Color3.new(1, 1, 1), 0.1)
-            }):Play()
-        end)
-        
-        button.MouseLeave:Connect(function()
-            TweenService:Create(button, TweenInfo.new(0.3), {
-                BackgroundColor3 = originalColor
-            }):Play()
-        end)
-        
-        return button
-    end
-    
-    Converted["_StartButton"] = CreateButton("Start", Color3.fromRGB(46, 204, 113), UDim2.new(0, 0, 0, 0))
-    Converted["_StopButton"] = CreateButton("Stop", Color3.fromRGB(231, 76, 60), UDim2.new(0.52, 0, 0, 0))
-    
-    local MiniUI = Instance.new("Frame")
-    MiniUI.Name = "MiniUI"
-    MiniUI.Size = UDim2.new(0, 50, 0, 50)
-    MiniUI.Position = UDim2.new(0, SCREEN_WIDTH - 100, 0, 10)
-    MiniUI.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
-    MiniUI.Visible = false
-    MiniUI.Parent = ScreenGui
-    CreateSmoothCorner(MiniUI, 8)
-    CreateDropShadow(MiniUI)
-    
-    local RestoreButton = Instance.new("TextButton")
-    RestoreButton.Size = UDim2.new(1.2, 0, 1.2, 0)
-    RestoreButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    RestoreButton.Text = "Open"
-    RestoreButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    RestoreButton.TextSize = 16
-    RestoreButton.Parent = MiniUI
-    CreateSmoothCorner(RestoreButton)
-   
-    local dragging, dragStart, startPos
-    
-    TitleBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = Converted["_MainFrame"].Position
-            
-            local connection
-            connection = input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                    connection:Disconnect()
-                end
-            end)
-        end
-    end)
-    
-    UserInputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
-            local delta = input.Position - dragStart
-            Converted["_MainFrame"].Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X, 
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
-        end
-    end)
-    
-    CloseButton.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
-    
-    MinimizeButton.MouseButton1Click:Connect(function()
-        isMinimized = not isMinimized
-        Converted["_MainFrame"].Visible = not isMinimized
-        MiniUI.Visible = isMinimized
-    end)
-    
-    RestoreButton.MouseButton1Click:Connect(function()
-        isMinimized = false
-        Converted["_MainFrame"].Visible = true
-        MiniUI.Visible = false
-    end)
-    
-    return ScreenGui
 end
-
-local function UpdateTime()
-    local GameTime = math.floor(workspace.DistributedGameTime + 0.5)
-    local Hour = math.floor(GameTime/(60^2))%24
-    local Minute = math.floor(GameTime/(60^1))%60
-    local Second = math.floor(GameTime/(60^0))%60
-    Converted["_TimeLabel"].Text = string.format("â° Time: %02d:%02d:%02d", Hour, Minute, Second)
-end
-
-local function UpdateStats()
-    local player = game:GetService("Players").LocalPlayer
-    local beli = player.Data.Beli.Value
-    
-    if oldBeli == 0 then
-        oldBeli = beli
-    else
-        earnedBeli = beli - oldBeli
-    end
-    
-    local chestCount = 0
-    for _, v in pairs(game.workspace:GetChildren()) do
-        if string.find(v.Name, "Chest") and v:IsA("Part") then
-            chestCount = chestCount + 1
-        end
-    end
-    
-    Converted["_BeliLabel"].Text = string.format("ðŸ’° Beli: %s", FormatNumber(beli))
-    Converted["_EarnedBeliLabel"].Text = string.format("ðŸ“ˆ Earned: %s", FormatNumber(earnedBeli))
-    Converted["_ChestLabel"].Text = string.format("ðŸŽ Chests: %d", chestCount)
-end
-
-local function InitializeScript()
-    local gui = CreateMainGui()
-    gui.Parent = game:GetService("CoreGui")
-    
-Converted["_StartButton"].MouseButton1Click:Connect(function()
-        getgenv().config.ChestFarm["Start Farm Chest"] = true
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Cáº¯t Tai  Hub",
-            Text = "Auto Chest Started!",
-            Duration = 2
-        })
-    end)
-    
-    Converted["_StopButton"].MouseButton1Click:Connect(function()
-        getgenv().config.ChestFarm["Start Farm Chest"] = false
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Cáº¯t Tai  Hub",
-            Text = "Auto Chest Stopped!",
-            Duration = 2
-        })
-    end)
-   
-    task.spawn(function()
-        while true do
-            UpdateTime()
-            UpdateStats()
-            task.wait(1)
-        end
-    end)
-end
-
-InitializeScript()
-
-
---//Chets code
-    spawn(function()
-        while wait() do
-        if getgenv().config.getgenv().config["Stop When Have God's Chaile or Dark Key"] then
-            if game.Players.LocalPlayer.Backpack:FindFirstChild("Fist of Darkness") or game.Players.LocalPlayer.Character:FindFirstChild("Fist of Darkness") or game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") or game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice") then
-                getgenv().config.ChestFarm["Start Farm Chest"] = true
-                end
-            end
-        end
-    end)
-    --//Chest
-task.spawn(function()
-    while true do
-        if getgenv().config.ChestFarm["Start Farm Chest"] then
-        
-            local hasChar = game.Players.LocalPlayer:FindFirstChild("Character")
-            if not game.Players.LocalPlayer.Character then
-                -- Character not loaded
-            else
-                local hasCrewTag = game.Players.LocalPlayer.Character:FindFirstChild("CrewBBG", true)
-                if hasCrewTag then hasCrewTag:Destroy() end
-                
-                local hasHumanoid = game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
-                if hasHumanoid then
-                    local Chest = game.Workspace:FindFirstChild("Chest4") 
-                        or game.Workspace:FindFirstChild("Chest3") 
-                        or game.Workspace:FindFirstChild("Chest2") 
-                        or game.Workspace:FindFirstChild("Chest1") 
-                        or game.Workspace:FindFirstChild("Chest")
-                    
-                    if Chest then
-                        game.Players.LocalPlayer.Character:PivotTo(Chest:GetPivot())
-                        firesignal(Chest.Touched, game.Players.LocalPlayer.Character.HumanoidRootPart)
-                    else
-                        Hop()
-                    end
-                end
-            end
-        end
-        task.wait()
-    end
+pcall(function() 
+    game:GetService("Players").LocalPlayer.PlayerGui.Main.Compass:Destroy()
 end)

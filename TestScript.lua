@@ -1,7 +1,7 @@
 --[[
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 getgenv().Team = "Marines"          -- Pirates or Marines
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/phatsadboizbuonba/refs/heads/main/Main/Test.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/TestScript.lua"))()
 ]] --
 
 if getgenv().Team == "Pirates" then

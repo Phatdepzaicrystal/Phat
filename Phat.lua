@@ -10874,6 +10874,478 @@ ToggleNPC:OnChanged(
 )
 Options.ToggleNPC:SetValue(false)
 
+local Hopre = Tabs.Teleport:AddSection("Hop Sever Premium")
+
+local TS
+
+local function scrapeAPI()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/fullmoon",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            TS = tick()
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+local function scrapeAPI_2()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/mirage",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+local function scrapeAPI_3()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/indra",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+local function scrapeAPI_4()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/doughking",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+local function scrapeAPI_5()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/darkbread",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+local function scrapeAPI_6()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/captain",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+local function scrapeAPI_7()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/lowsever",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+local function scrapeAPI_8()
+    local req = (syn and syn.request) or (http and http.request) or request
+    local success, response =
+        pcall(
+        function()
+            return req(
+                {
+                    Url = "https://b7f13292-4118-461d-b8e9-207be68b749e-00-2rgvijjkq7q4q.pike.replit.dev/JobId/volcano",
+                    Method = "GET"
+                }
+            )
+        end
+    )
+
+    if success and response and response.Body then
+        local data = game.HttpService:JSONDecode(response.Body)
+        if data.Amount and data.Amount > 0 then
+            local jobIds = {}
+            for _, job in ipairs(data.JobId) do
+                for jobId, _ in pairs(job) do
+                    table.insert(jobIds, jobId)
+                end
+            end
+            return jobIds
+        end
+    end
+
+    return nil
+end
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Full Moon",
+        Callback = function()
+            local jobIds = scrapeAPI()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Mirage",
+        Callback = function()
+            local jobIds = scrapeAPI_2()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Rip Indra",
+        Callback = function()
+            local jobIds = scrapeAPI_3()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Dough King",
+        Callback = function()
+            local jobIds = scrapeAPI_4()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Dark Beard",
+        Description = "Go To Second Sea Plz",
+        Callback = function()
+            local jobIds = scrapeAPI_5()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Cursed Captain",
+        Description = "Go To Second Sea Plz",
+        Callback = function()
+            local jobIds = scrapeAPI_6()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Low Sever",
+        Callback = function()
+            local jobIds = scrapeAPI_7()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+Tabs.Teleport:AddButton(
+    {
+        Title = "Hop Server Volcano Island",
+        Callback = function()
+            local jobIds = scrapeAPI_8()
+            if not jobIds then
+                Fluent:Notify(
+                    {
+                        Title = "Hopping",
+                        Content = "Wait To Find New Sever!!",
+                        Duration = 4
+                    }
+                )
+                return
+            end
+
+            task.spawn(
+                function()
+                    for _, jobId in ipairs(jobIds) do
+                        game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", jobId)
+                        task.wait(5)
+                    end
+                end
+            )
+        end
+    }
+)
+
+----------------------------------Raid-------------------------------
 local Remote_GetFruits = game.ReplicatedStorage:FindFirstChild("Remotes").CommF_:InvokeServer("GetFruits")
 Table_DevilFruitSniper = {}
 ShopDevilSell = {}

@@ -9534,7 +9534,7 @@ spawn(
                 while wait(0.1) do
                     if _G.Auto_RainbowHaki then
                         if not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible then
-                            Tween2(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
+                            Tween(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
                             if
                                 ((Vector3.new(-11892.0703125, 930.57672119141, -8760.1591796875) -
                                     game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <=
@@ -9555,7 +9555,20 @@ spawn(
                                     if (v1564.Name == "Stone") then
                                         OldCFrameRainbow = v1564.HumanoidRootPart.CFrame
                                         repeat
-                                            task.wait(_G.Fast_Tween2(CFrame.new(-1086.11621, 38.8425903, 6768.71436))
+                                            task.wait(_G.Fast_Delay)
+                                            EquipTool(SelectWeapon)
+                                            Tween(v1564.HumanoidRootPart.CFrame * Pos)
+                                            v1564.HumanoidRootPart.CanCollide = false
+                                            v1564.HumanoidRootPart.CFrame = OldCFrameRainbow
+                                            v1564.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                                            AttackNoCoolDown()
+                                        until not _G.Auto_RainbowHaki or (v1564.Humanoid.Health <= 0) or
+                                            not v1564.Parent or
+                                            not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible
+                                    end
+                                end
+                            else
+                                Tween(CFrame.new(-1086.11621, 38.8425903, 6768.71436))
                             end
                         elseif
                             (game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible and
@@ -9582,7 +9595,7 @@ spawn(
                                     end
                                 end
                             else
-                                Tween2(CFrame.new(5713.98877, 601.922974, 202.751251))
+                                Tween(CFrame.new(5713.98877, 601.922974, 202.751251))
                             end
                         elseif
                             string.find(
@@ -9608,7 +9621,7 @@ spawn(
                                     end
                                 end
                             else
-                                Tween2(CFrame.new(2877.61743, 423.558685, -7207.31006))
+                                Tween(CFrame.new(2877.61743, 423.558685, -7207.31006))
                             end
                         elseif
                             string.find(
@@ -9634,7 +9647,7 @@ spawn(
                                     end
                                 end
                             else
-                                Tween2(CFrame.new(-13485.0283, 331.709259, -8012.4873))
+                                Tween(CFrame.new(-13485.0283, 331.709259, -8012.4873))
                             end
                         elseif
                             string.find(
@@ -9660,10 +9673,10 @@ spawn(
                                     end
                                 end
                             else
-                                Tween2(CFrame.new(5312.3598632813, 20.141201019287, -10.158538818359))
+                                Tween(CFrame.new(5312.3598632813, 20.141201019287, -10.158538818359))
                             end
                         else
-                            Tween2(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
+                            Tween(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
                             if
                                 ((Vector3.new(-11892.0703125, 930.57672119141, -8760.1591796875) -
                                     game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <=

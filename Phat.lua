@@ -6931,21 +6931,6 @@ spawn(function()
     end
 end)
 
-local Slider =
-    Tabs.Settings:AddSlider(
-    "Slider",
-    {
-        Title = "Farm Distance",
-        Default = 15,
-        Min = 0,
-        Max = 30,
-        Rounding = 5,
-        Callback = function(Value)
-            PosY = Value
-        end
-    }
-)
-
 local NoClipz =
     Tabs.Setting:AddToggle(
     "NoClipz",

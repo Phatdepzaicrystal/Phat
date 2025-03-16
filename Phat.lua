@@ -10053,7 +10053,7 @@ spawn(function()
     end
 end)
 
-local Ripindra = Tabs.Item:AddToggle("Ripindra", {Title = "Auto Rip Indra", Default = false })
+local Ripindra = Tabs.Item:AddToggle("Ripindra", {Title = "Kill Rip Indra", Default = false })
 Ripindra:OnChanged(function(Value)
     getgenv().AutoRipIndra = Value
 end)
@@ -10092,7 +10092,7 @@ spawn(function()
         end
     end)
 end)
-local Soul = Tabs.Item:AddToggle("Soul", {Title = "Auto Soul Reaper", Default = false })
+local Soul = Tabs.Item:AddToggle("Soul", {Title = "Kill Soul Reaper", Default = false })
 Soul:OnChanged(function(Value)
     getgenv().AutoSoulReaper = Value
 end)
@@ -10139,7 +10139,7 @@ spawn(function()
     end
 end)
 
-local DoughKing = Tabs.Item:AddToggle("DoughKing", {Title = "Auto Dough King", Default = false })
+local DoughKing = Tabs.Item:AddToggle("DoughKing", {Title = "Kill Dough King", Default = false })
 DoughKing:OnChanged(function(Value)
     getgenv().AutoDoughKing = Value
 end)
@@ -10270,7 +10270,7 @@ spawn(function()
         end
     end
 end)
-local DarkBe = Tabs.Item:AddToggle("DarkBe", {Title = "Auto Darkbeard", Default = false })
+local DarkBe = Tabs.Item:AddToggle("DarkBe", {Title = "Kill Darkbeard", Default = false })
 DarkBe:OnChanged(function(Value)
     getgenv().AutoDarkbeard = Value
 end)

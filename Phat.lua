@@ -6894,44 +6894,42 @@ spawn(
     end
 )
 
-local BringMob = Tabs.Settings:AddToggle("BringMob", {Title = "Bring Mob", Default = true})
-BringMob:OnChanged(
-    function(Value)
-        _G.BringMonster = Value
-    end
-)
+local ToggleBringMob = Tabs.Setting:AddToggle("ToggleBringMob", {
+    Title = "Bring Mob",
+    Default = true
+})
+
+ToggleBringMob:OnChanged(function(Value)
+    _G.BringMob = Value
+end)
+
+Options.ToggleBringMob:SetValue(true)
+
 spawn(function()
-	while task.wait() do
-		pcall(function()
-			if _G.BringMonster then
-				FindQuest()
-				for v2159, v2160 in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-					if (_G.LevelFarm and StartMagnet and (v2160.Name == Mon) and ((Mon == "Factory Staff [Lv. 800]") or (Mon == "Monkey [Lv. 14]") or (Mon == "Dragon Crew Warrior [Lv. 1575]") or (Mon == "Dragon Crew Archer [Lv. 1600]")) and v2160:FindFirstChild("Humanoid") and v2160:FindFirstChild("HumanoidRootPart") and (v2160.Humanoid.Health > 0) and ((v2160.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 220)) then
-						v2160.HumanoidRootPart.Size = Vector3.new(50, 50, 50);
-						v2160.HumanoidRootPart.CFrame = PosMon;
-						v2160.Humanoid:ChangeState(14);
-						v2160.HumanoidRootPart.CanCollide = false;
-						v2160.Head.CanCollide = false;
-						if v2160.Humanoid:FindFirstChild("Animator") then
-							v2160.Humanoid.Animator:Destroy();
-						end
-						sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRadius", math.huge);
-					elseif (_G.LevelFarm and StartMagnet and (v2160.Name == Mon) and v2160:FindFirstChild("Humanoid") and v2160:FindFirstChild("HumanoidRootPart") and (v2160.Humanoid.Health > 0) and ((v2160.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= _G.BringMode)) then
-						v2160.HumanoidRootPart.Size = Vector3.new(50, 50, 50);
-						v2160.HumanoidRootPart.CFrame = PosMon;
-						v2160.Humanoid:ChangeState(14);
-						v2160.HumanoidRootPart.CanCollide = false;
-						v2160.Head.CanCollide = false;
-						if v2160.Humanoid:FindFirstChild("Animator") then
-							v2160.Humanoid.Animator:Destroy();
-						end
-						sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRadius", math.huge);
-					end
-				end
-			end
-		end);
-	end
-end);
+    while wait() do
+        pcall(function()
+            for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                if _G.BringMob and bringmob and v.Name == MonFarm and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                    if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 500 then
+                        v.Head.CanCollide = false
+                        v.HumanoidRootPart.CanCollide = false
+                        v.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
+                        v.HumanoidRootPart.CFrame = FarmPos
+                        sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                    end
+                elseif _G.BringMob and bringmob and v.Name == "Factory Staff" and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                    if (v.HumanoidRootPart.Position - FarmPos.Position).Magnitude <= 500 then
+                        v.Head.CanCollide = false
+                        v.HumanoidRootPart.CanCollide = false
+                        v.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
+                        v.HumanoidRootPart.CFrame = FarmPos
+                        sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                    end
+                end
+            end
+        end)
+    end
+end)
 
 local Spin =
     Tabs.Settings:AddToggle("Spin", {Title = "Spin Position", Description = "Spin Position When Farm", Default = true})

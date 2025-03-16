@@ -4775,7 +4775,7 @@ do
                                         Tween(CFrameQ)
                                     end
                                 else
-                                    Tween(CFrameQ)
+                                    Tween2(CFrameQ)
                                 end
                                 if
                                     (CFrameQ.Position -
@@ -4792,21 +4792,7 @@ do
                                 string.find(
                                     game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,
                                     NameMon
-                                ) or game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == true
-                             then
-                                for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                                    if
-                                        v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and
-                                            v.Humanoid.Health > 0
-                                     then
-                                        if v.Name == Ms then
-                                            repeat
-                                                wait(0)
-
-                                                bringmob = true
-                                                AutoHaki()
-                                                EquipTool(SelectWeapon)
-                                                Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
+                                ) or game:GetService("Players").LocalPlayer.PlTween2(v.HumanoidRootPart.CFrame * Pos)
                                                 v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                                 v.HumanoidRootPart.Transparency = 1
                                                 v.Humanoid.JumpPower = 0
@@ -4830,7 +4816,7 @@ do
                                             (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Position).Magnitude >=
                                                 10
                                          then
-                                            Tween(v.CFrame * CFrame.new(15, 10, 2))
+                                            Tween2(v.CFrame * CFrame.new(15, 10, 2))
                                         end
                                     end
                                 end
@@ -4871,7 +4857,7 @@ do
                                                 bringmob = true
                                                 AutoHaki()					
                                                 EquipTool(SelectWeapon)
-                                                Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
+                                                Tween2(v.HumanoidRootPart.CFrame * Pos)
                                                 v.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
                                                 v.HumanoidRootPart.Transparency = 1
                                                 v.Humanoid.JumpPower = 0
@@ -6076,7 +6062,7 @@ do
                                                     v.HumanoidRootPart.CanCollide = false
                                                     v.Humanoid.WalkSpeed = 0
                                                     v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                                    Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
+                                                    Tween2(v.HumanoidRootPart.CFrame * Pos)
                                                     game.Players.LocalPlayer.Character.Humanoid.Sit = false
                                                 until not _G.AutoShark or not v.Parent or v.Humanoid.Health <= 0
                                             end
@@ -6131,7 +6117,7 @@ do
                                                     v.HumanoidRootPart.CanCollide = false
                                                     v.Humanoid.WalkSpeed = 0
                                                     v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                                    Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
+                                                    Tween2(v.HumanoidRootPart.CFrame * Pos)
 
                                                     game.Players.LocalPlayer.Character.Humanoid.Sit = false
                                                 until not _G.AutoFishCrew or not v.Parent or v.Humanoid.Health <= 0
@@ -6144,7 +6130,7 @@ do
                                             CFrame.new(0, 1, 0)
                                     )
                                     if game:GetService("ReplicatedStorage"):FindFirstChild("Fish Crew Member") then
-                                        Tween(
+                                        Tween2(
                                             game:GetService("ReplicatedStorage"):FindFirstChild("Fish Crew Member").HumanoidRootPart.CFrame *
                                                 CFrame.new(2, 20, 2)
                                         )
@@ -7838,7 +7824,7 @@ spawn(
                                                         v.HumanoidRootPart.CanCollide = false
                                                         v.Humanoid.WalkSpeed = 0
                                                         v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                                        Tween(v.HumanoidRootPart.CFrame * Pos)
+                                                        Tween2(v.HumanoidRootPart.CFrame * Pos)
                                                         AttackNoCoolDown()
                                                         MonFarm = v.Name
                                                     until not _G.Bone or v.Humanoid.Health <= 0 or not v.Parent or
@@ -8108,7 +8094,7 @@ spawn(
                                             game:GetService("Workspace").Map.Jungle.QuestPlates.Plate5.Button.CFrame
                                         wait(1)
                                     else
-                                        Tween(
+                                        Tween2(
                                             CFrame.new(
                                                 -1612.55884,
                                                 36.9774132,
@@ -8148,7 +8134,7 @@ spawn(
                                             )
                                         )
                                     else
-                                        Tween(
+                                        Tween2(
                                             CFrame.new(
                                                 -1610.00757,
                                                 11.5049858,
@@ -8208,7 +8194,7 @@ spawn(
                                         (game:GetService("Workspace").Enemies:FindFirstChild("Mob Leader") or
                                             game:GetService("ReplicatedStorage"):FindFirstChild("Mob Leader"))
                                      then
-                                        Tween(
+                                        Tween2(
                                             CFrame.new(
                                                 -2967.59521,
                                                 -4.91089821,
@@ -8271,7 +8257,7 @@ spawn(
                                     wait(0.5)
                                     EquipTool("Relic")
                                     wait(0.5)
-                                    Tween(
+                                    Tween2(
                                         CFrame.new(
                                             -1404.91504,
                                             29.9773273,
@@ -8376,11 +8362,11 @@ spawn(
                                 ((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v71.Position).Magnitude <
                                     1500)
                              then
-                                Tween(v71)
+                                Tween2(v71)
                             end
                             Tween(CFrame.new(-7748.0185546875, 5606.80615234375, -2305.898681640625))
                             if game:GetService("ReplicatedStorage"):FindFirstChild("Thunder God") then
-                                Tween(
+                                Tween2(
                                     game:GetService("ReplicatedStorage"):FindFirstChild("Thunder God").HumanoidRootPart.CFrame *
                                         CFrame.new(2, 20, 2)
                                 )
@@ -8428,7 +8414,7 @@ spawn(
                                                 v1045.HumanoidRootPart.CanCollide = false
                                                 v1045.Humanoid.WalkSpeed = 0
                                                 v1045.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                                Tween(v1045.HumanoidRootPart.CFrame * Pos)
+                                                Tween2(v1045.HumanoidRootPart.CFrame * Pos)
                                                 AttackNoCoolDown()
                                             until not _G.Auto_Saw or not v1045.Parent or (v1045.Humanoid.Health <= 0)
                                         end
@@ -8438,11 +8424,11 @@ spawn(
                                 ((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v71.Position).Magnitude <
                                     1500)
                              then
-                                Tween(v71)
+                                Tween2(v71)
                             end
-                            Tween(CFrame.new(-690.33081054688, 15.09425163269, 1582.2380371094))
+                            Tween2(CFrame.new(-690.33081054688, 15.09425163269, 1582.2380371094))
                             if game:GetService("ReplicatedStorage"):FindFirstChild("The Saw") then
-                                Tween(
+                                Tween2(
                                     game:GetService("ReplicatedStorage"):FindFirstChild("The Saw").HumanoidRootPart.CFrame *
                                         CFrame.new(2, 20, 2)
                                 )
@@ -8490,7 +8476,7 @@ spawn(
                                                 v1047.HumanoidRootPart.CanCollide = false
                                                 v1047.Humanoid.WalkSpeed = 0
                                                 v1047.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                                Tween(v1047.HumanoidRootPart.CFrame * Pos)
+                                                Tween2(v1047.HumanoidRootPart.CFrame * Pos)
                                                 AttackNoCoolDown()
                                             until not _G.Auto_Warden or not v1047.Parent or (v1047.Humanoid.Health <= 0)
                                         end
@@ -8500,11 +8486,11 @@ spawn(
                                 ((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v74.Position).Magnitude <
                                     1500)
                              then
-                                Tween(v74)
+                                Tween2(v74)
                             end
-                            Tween(CFrame.new(5186.14697265625, 24.86684226989746, 832.1885375976562))
+                            Tween2(CFrame.new(5186.14697265625, 24.86684226989746, 832.1885375976562))
                             if game:GetService("ReplicatedStorage"):FindFirstChild("Chief Warden") then
-                                Tween(
+                                Tween2(
                                     game:GetService("ReplicatedStorage"):FindFirstChild("Chief Warden").HumanoidRootPart.CFrame *
                                         CFrame.new(2, 20, 2)
                                 )
@@ -8557,14 +8543,14 @@ spawn(
                                         )
                                  then
                                     repeat
-                                        Tween(CFrame.new(-8932.322265625, 146.83154296875, 6062.55078125))
+                                        Tween2(CFrame.new(-8932.322265625, 146.83154296875, 6062.55078125))
                                         wait()
                                     until (CFrame.new(-8932.322265625, 146.83154296875, 6062.55078125).Position -
                                         game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 8
                                     EquipTool("Hallow Essence")
                                 else
                                     if game:GetService("ReplicatedStorage"):FindFirstChild("Soul Reaper") then
-                                        Tween(
+                                        Tween2(
                                             game:GetService("ReplicatedStorage"):FindFirstChild("Soul Reaper").HumanoidRootPart.CFrame *
                                                 CFrame.new(2, 20, 2)
                                         )
@@ -8657,12 +8643,12 @@ spawn(
                                         v.Humanoid.WalkSpeed = 0
                                         v.HumanoidRootPart.CanCollide = false
                                         v.Humanoid:ChangeState(11)
-                                        Tween(v.HumanoidRootPart.CFrame * Pos)
+                                        Tween2(v.HumanoidRootPart.CFrame * Pos)
                                     until not AutoTushita or not v.Parent or v.Humanoid.Health <= 0
                                 end
                             end
                         else
-                            Tween(CFrame.new(-10238.875976563, 389.7912902832, -9549.7939453125))
+                            Tween2(CFrame.new(-10238.875976563, 389.7912902832, -9549.7939453125))
                         end
                     end
                 end
@@ -8684,35 +8670,35 @@ spawn(
                             function()
                                 wait(1)
                                 repeat
-                                    Tween(CFrame.new(-10752, 417, -9366))
+                                    Tween2(CFrame.new(-10752, 417, -9366))
                                     wait()
                                 until not _G.Auto_Holy_Torch or
                                     (game.Players.LocalPlayer.Character.HumanoidRootPart.Position -
                                         Vector3.new(-10752, 417, -9366)).Magnitude <= 10
                                 wait(1)
                                 repeat
-                                    Tween(CFrame.new(-11672, 334, -9474))
+                                    Tween2(CFrame.new(-11672, 334, -9474))
                                     wait()
                                 until not _G.Auto_Holy_Torch or
                                     (game.Players.LocalPlayer.Character.HumanoidRootPart.Position -
                                         Vector3.new(-11672, 334, -9474)).Magnitude <= 10
                                 wait(1)
                                 repeat
-                                    Tween(CFrame.new(-12132, 521, -10655))
+                                    Tween2(CFrame.new(-12132, 521, -10655))
                                     wait()
                                 until not _G.Auto_Holy_Torch or
                                     (game.Players.LocalPlayer.Character.HumanoidRootPart.Position -
                                         Vector3.new(-12132, 521, -10655)).Magnitude <= 10
                                 wait(1)
                                 repeat
-                                    Tween(CFrame.new(-13336, 486, -6985))
+                                    Tween2(CFrame.new(-13336, 486, -6985))
                                     wait()
                                 until not _G.Auto_Holy_Torch or
                                     (game.Players.LocalPlayer.Character.HumanoidRootPart.Position -
                                         Vector3.new(-13336, 486, -6985)).Magnitude <= 10
                                 wait(1)
                                 repeat
-                                    Tween(CFrame.new(-13489, 332, -7925))
+                                    Tween2(CFrame.new(-13489, 332, -7925))
                                     wait()
                                 until not _G.Auto_Holy_Torch or
                                     (game.Players.LocalPlayer.Character.HumanoidRootPart.Position -
@@ -8770,7 +8756,7 @@ spawn(function()
                                     Quest4 = true;
                                     repeat
                                         wait();
-                                        Tween(CFrame.new(- 9553.5986328125, 65.62338256835938, 6041.58837890625));
+                                        Tween2(CFrame.new(- 9553.5986328125, 65.62338256835938, 6041.58837890625));
                                     until ((CFrame.new(- 9553.5986328125, 65.62338256835938, 6041.58837890625).Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 3) or not _G.Auto_SkullGuitar
                                     wait(1);
                                     Tween(game:GetService("Workspace").Map["Haunted Castle"]["Lab Puzzle"].ColorFloor.Model.Part3.CFrame);
@@ -8824,7 +8810,7 @@ spawn(function()
                                                 v1805.Humanoid.WalkSpeed = 0;
                                                 v1805.HumanoidRootPart.CanCollide = false;
                                                 v1805.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0) ;
-                                                Tween(CFrame.new(- 10160.787109375, 138.6616973876953, 5955.03076171875));
+                                                Tween2(CFrame.new(- 10160.787109375, 138.6616973876953, 5955.03076171875));
                                                 game:GetService("VirtualUser"):CaptureController();
                                                 game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672));
                                             end
@@ -9548,7 +9534,7 @@ spawn(
                 while wait(0.1) do
                     if _G.Auto_RainbowHaki then
                         if not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible then
-                            Tween(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
+                            Tween2(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
                             if
                                 ((Vector3.new(-11892.0703125, 930.57672119141, -8760.1591796875) -
                                     game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <=
@@ -9569,20 +9555,7 @@ spawn(
                                     if (v1564.Name == "Stone") then
                                         OldCFrameRainbow = v1564.HumanoidRootPart.CFrame
                                         repeat
-                                            task.wait(_G.Fast_Delay)
-                                            EquipTool(SelectWeapon)
-                                            Tween(v1564.HumanoidRootPart.CFrame * Pos)
-                                            v1564.HumanoidRootPart.CanCollide = false
-                                            v1564.HumanoidRootPart.CFrame = OldCFrameRainbow
-                                            v1564.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                            AttackNoCoolDown()
-                                        until not _G.Auto_RainbowHaki or (v1564.Humanoid.Health <= 0) or
-                                            not v1564.Parent or
-                                            not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible
-                                    end
-                                end
-                            else
-                                Tween(CFrame.new(-1086.11621, 38.8425903, 6768.71436))
+                                            task.wait(_G.Fast_Tween2(CFrame.new(-1086.11621, 38.8425903, 6768.71436))
                             end
                         elseif
                             (game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible and
@@ -9609,7 +9582,7 @@ spawn(
                                     end
                                 end
                             else
-                                Tween(CFrame.new(5713.98877, 601.922974, 202.751251))
+                                Tween2(CFrame.new(5713.98877, 601.922974, 202.751251))
                             end
                         elseif
                             string.find(
@@ -9635,7 +9608,7 @@ spawn(
                                     end
                                 end
                             else
-                                Tween(CFrame.new(2877.61743, 423.558685, -7207.31006))
+                                Tween2(CFrame.new(2877.61743, 423.558685, -7207.31006))
                             end
                         elseif
                             string.find(
@@ -9661,7 +9634,7 @@ spawn(
                                     end
                                 end
                             else
-                                Tween(CFrame.new(-13485.0283, 331.709259, -8012.4873))
+                                Tween2(CFrame.new(-13485.0283, 331.709259, -8012.4873))
                             end
                         elseif
                             string.find(
@@ -9687,10 +9660,10 @@ spawn(
                                     end
                                 end
                             else
-                                Tween(CFrame.new(5312.3598632813, 20.141201019287, -10.158538818359))
+                                Tween2(CFrame.new(5312.3598632813, 20.141201019287, -10.158538818359))
                             end
                         else
-                            Tween(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
+                            Tween2(CFrame.new(-11892.0703125, 930.57672119141, -8760.1591796875))
                             if
                                 ((Vector3.new(-11892.0703125, 930.57672119141, -8760.1591796875) -
                                     game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <=
@@ -9733,7 +9706,7 @@ if Second_Sea then
                                             Vector3.new(448.46756, 199.356781, -441.389252)).Magnitude <= 10
                                     EquipTool(SelectWeapon)
                                     AutoHaki()
-                                    Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
+                                    Tween(v.HumanoidRootPart.CFrame * Pos)
                                     v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
                                     v.HumanoidRootPart.Transparency = 1
                                     v.Humanoid.JumpPower = 0
@@ -9747,7 +9720,7 @@ if Second_Sea then
                         end
                     elseif game.ReplicatedStorage:FindFirstChild("Core") then
                         repeat
-                            Tween(CFrame.new(448.46756, 199.356781, -441.389252))
+                            Tween2(CFrame.new(448.46756, 199.356781, -441.389252))
                             wait()
                         until not _G.Factory or
                             (game.Players.LocalPlayer.Character.HumanoidRootPart.Position -
@@ -9789,14 +9762,14 @@ spawn(
                                             v.HumanoidRootPart.CanCollide = false
                                             v.Humanoid.WalkSpeed = 0
                                             v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                            Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
+                                            Tween2(v.HumanoidRootPart.CFrame * Pos)
                                         until not _G.AutoCakeV2 or not v.Parent or v.Humanoid.Health <= 0
                                     end
                                 end
                             end
                         else
                             if game:GetService("ReplicatedStorage"):FindFirstChild("Dough King") then
-                                Tween(
+                                Tween2(
                                     game:GetService("ReplicatedStorage"):FindFirstChild("Dough King").HumanoidRootPart.CFrame *
                                         CFrame.new(2, 20, 2)
                                 )

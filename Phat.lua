@@ -9961,6 +9961,351 @@ spawn(
     end
 )
 
+local boss = Tabs.Item:AddSection("Boss-Item Farm")
+
+local Cyborg = Tabs.Item:AddToggle("Cyborg", {Title = "Auto Get Cyborg Race", Description = "", Default = false })
+Cyborg:OnChanged(function(Value)
+    getgenv().AutoCyborg = Value
+end)
+spawn(function()
+    pcall(function()
+        while task.wait(0.5) do
+            if getgenv().AutoCyborg then
+                if not game:GetService("Players").LocalPlayer.Character:FindFirstChild("Microchip") 
+                and not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Microchip") 
+                and not game:GetService("Workspace").Enemies:FindFirstChild("Order") 
+                and not game:GetService("ReplicatedStorage"):FindFirstChild("Order") then
+                    wait(0.3)
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward", "Microchip", "1")
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward", "Microchip", "2")
+                end
+            end
+        end
+    end)
+end)
+spawn(function()
+    pcall(function()
+        while task.wait(0.5) do
+            if getgenv().AutoCyborg then
+                if not game:GetService("Workspace").Enemies:FindFirstChild("Order") 
+                and not game:GetService("ReplicatedStorage"):FindFirstChild("Order") then
+                    if game:GetService("Players").LocalPlayer.Character:FindFirstChild("Microchip") 
+                    or game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Microchip") then
+                        fireclickdetector(
+                            game:GetService("Workspace").Map.CircleIsland.RaidSummon.Button.Main.ClickDetector
+                        )
+                    end
+                end                
+                if game:GetService("ReplicatedStorage"):FindFirstChild("Order") 
+                or game:GetService("Workspace").Enemies:FindFirstChild("Order") then
+                    if game:GetService("Workspace").Enemies:FindFirstChild("Order") then
+                        for _, i in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                            if i.Name == "Order" then
+                                repeat 
+                                    task.wait(0.1)
+                                    AutoHaki()
+                                    EquipWeapon(SelectWeapon)
+                                    Tween2(i.HumanoidRootPart.CFrame * Pos)
+                                    i.HumanoidRootPart.CanCollide = false
+                                    i.HumanoidRootPart.Size = Vector3.new(120, 120, 120)
+                                until not i.Parent or i.Humanoid.Health <= 0 or getgenv().AutoCyborg == false
+                            end
+                        end
+                    elseif game:GetService("ReplicatedStorage"):FindFirstChild("Order") then
+                        Tween2(CFrame.new(-6217.2021484375, 28.047645568848, -5053.1357421875))
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+local Ghoul = Tabs.Item:AddToggle("Ghoul", {Title = "Auto Get Ghoul Race", Default = false })
+Ghoul:OnChanged(function(Value)
+    getgenv().AutoGhoul = Value
+end)
+spawn(function()
+    while task.wait(0.1) do
+        if not getgenv().AutoGhoul then break end
+        local enemies = game:GetService("Workspace").Enemies
+        local cursedCaptain = enemies:FindFirstChild("Cursed Captain")
+        if cursedCaptain and cursedCaptain:FindFirstChild("Humanoid") and cursedCaptain:FindFirstChild("HumanoidRootPart") then
+            local humanoid = cursedCaptain.Humanoid
+            local rootPart = cursedCaptain.HumanoidRootPart
+            if humanoid.Health > 0 then
+                rootPart.CanCollide = false
+                humanoid.WalkSpeed = 0
+                rootPart.Size = Vector3.new(50,50,50)
+                repeat
+                    task.wait(0.05)
+                    AutoHaki()
+                    EquipWeapon(SelectWeapon)
+                    Tween2(rootPart.CFrame * CFrame.new(0, 10, 0))
+                    sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRadius", 1000)
+                until not getgenv().AutoGhoul or humanoid.Health <= 0 or not cursedCaptain.Parent
+            end
+        else
+            local storageCaptain = game:GetService("ReplicatedStorage"):FindFirstChild("Cursed Captain")
+            if storageCaptain then
+                Tween2(storageCaptain.HumanoidRootPart.CFrame * CFrame.new(5,10,2))
+            end
+        end
+    end
+end)
+
+local Ripindra = Tabs.Item:AddToggle("Ripindra", {Title = "Auto Rip Indra", Default = false })
+Ripindra:OnChanged(function(Value)
+    getgenv().AutoRipIndra = Value
+end)
+spawn(function()
+    pcall(function()
+        while task.wait(1) do
+            if getgenv().AutoRipIndra and Third_Sea then
+                local enemies = game:GetService("Workspace").Enemies
+                local player = game:GetService("Players").LocalPlayer                
+                if enemies:FindFirstChild("rip_indra True Form") or enemies:FindFirstChild("rip_indra") then
+                    for _, v in pairs(enemies:GetChildren()) do
+                        if (v.Name == "rip_indra True Form" or v.Name == "rip_indra") and v.Humanoid.Health > 0 and v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                            repeat
+                                task.wait(0.3)
+                                pcall(function()
+                                    AutoHaki()
+                                    EquipWeapon(SelectWeapon)
+                                    v.HumanoidRootPart.CanCollide = false
+                                    v.Humanoid.WalkSpeed = 0
+                                    Tween2(v.HumanoidRootPart.CFrame * Pos)
+                                end)
+                            until getgenv().AutoRipIndra == false or v.Humanoid.Health <= 0
+                        end
+                    end
+                elseif player.Backpack:FindFirstChild("God's Chalice") or player.Character:FindFirstChild("God's Chalice") then
+                    repeat
+                        task.wait(0.3)
+                        Tween2(CFrame.new(-5563.75048828125, 320.4276123046875, -2662.509521484375))
+                        EquipWeapon("God's Chalice")
+                    until not (player.Backpack:FindFirstChild("God's Chalice") or player.Character:FindFirstChild("God's Chalice"))
+                elseif game:GetService("ReplicatedStorage"):FindFirstChild("rip_indra True Form") then
+                    local ripIndraTrueForm = game:GetService("ReplicatedStorage"):FindFirstChild("rip_indra True Form")
+                    Tween2(ripIndraTrueForm.HumanoidRootPart.CFrame * Pos)
+                end
+            end
+        end
+    end)
+end)
+local Soul = Tabs.Item:AddToggle("Soul", {Title = "Auto Soul Reaper", Default = false })
+Soul:OnChanged(function(Value)
+    getgenv().AutoSoulReaper = Value
+end)
+spawn(function()
+    while true do
+        if getgenv().AutoSoulReaper and Third_Sea then
+            pcall(function()
+                local workspaceEnemies = game:GetService("Workspace").Enemies
+                local replicatedStorage = game:GetService("ReplicatedStorage")
+                local player = game:GetService("Players").LocalPlayer
+                local backpack = player.Backpack
+                local character = player.Character
+                local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+                if workspaceEnemies:FindFirstChild("Soul Reaper") then
+                    for _, v in pairs(workspaceEnemies:GetChildren()) do
+                        if string.find(v.Name, "Soul Reaper") then
+                            repeat 
+                                task.wait(0.1)
+                                AutoHaki()
+                                EquipWeapon(SelectWeapon)
+                                Tween2(v.HumanoidRootPart.CFrame * Pos)
+                                v.HumanoidRootPart.CanCollide = false
+                                v.Humanoid.WalkSpeed = 0
+                                v.HumanoidRootPart.Transparency = 1
+                            until v.Humanoid.Health <= 0 or not getgenv().AutoSoulReaper
+                        end
+                    end
+                elseif backpack:FindFirstChild("Hallow Essence") or character:FindFirstChild("Hallow Essence") then
+                    local targetPosition = CFrame.new(-8932.322265625, 146.83154296875, 6062.55078125)
+                    repeat
+                        Tween2(targetPosition)
+                        task.wait(0.1)
+                    until (targetPosition.Position - humanoidRootPart.Position).Magnitude <= 8
+                    EquipWeapon("Hallow Essence")
+                else
+                    local soulReaper = replicatedStorage:FindFirstChild("Soul Reaper")
+                    if soulReaper then
+                        Tween2(soulReaper.HumanoidRootPart.CFrame * CFrame.new(2, 20, 2))
+                    end
+                end
+            end)
+        end
+        task.wait(0.1)
+    end
+end)
+
+local DoughKing = Tabs.Item:AddToggle("DoughKing", {Title = "Auto Dough King", Default = false })
+DoughKing:OnChanged(function(Value)
+    getgenv().AutoDoughKing = Value
+end)
+spawn(function()
+    game:GetService("RunService").Heartbeat:Connect(function()
+        pcall(function()
+            for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                if getgenv().AutoDoughKing and StartCakegetgenv().StartMagnet and 
+                   (v.Name == "Cookie Crafter" or v.Name == "Cake Guard" or v.Name == "Baking Staff" or v.Name == "Head Baker") and 
+                   (v.HumanoidRootPart.Position - POSCAKE.Position).magnitude <= 300 then
+                    v.HumanoidRootPart.CFrame = POSCAKE
+                    v.HumanoidRootPart.CanCollide = false
+                    if v.Humanoid:FindFirstChild("Animator") then
+                        v.Humanoid.Animator:Destroy()
+                    end
+                    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                end
+            end
+        end)
+    end)
+end)
+spawn(function()
+    while task.wait(0.2) do
+        if getgenv().AutoDoughKing and Third_Sea then
+            pcall(function()
+                if game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") or 
+                   game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice") then
+                    if string.find(game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SweetChaliceNpc"), "Where") then
+                        game.StarterGui:SetCore("SendNotification", {
+                            Title = "Phat Hub Notification",
+                            Text = "Not Have Enough Material",
+                            Icon = "http://www.roblox.com/asset/?id=",
+                            Duration = 2.5
+                        })
+                    else
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SweetChaliceNpc")
+                    end
+                elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Sweet Chalice") or 
+                       game.Players.LocalPlayer.Character:FindFirstChild("Sweet Chalice") then
+                    if string.find(game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("CakePrinceSpawner"), 
+                                   "Do you want to open the portal now?") then
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("CakePrinceSpawner")
+                    else
+                        if game.Workspace.Enemies:FindFirstChild("Baking Staff") or 
+                           game.Workspace.Enemies:FindFirstChild("Head Baker") or 
+                           game.Workspace.Enemies:FindFirstChild("Cake Guard") or 
+                           game.Workspace.Enemies:FindFirstChild("Cookie Crafter") then
+                            for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do  
+                                if (v.Name == "Baking Staff" or v.Name == "Head Baker" or 
+                                    v.Name == "Cake Guard" or v.Name == "Cookie Crafter") and 
+                                    v.Humanoid.Health > 0 then
+                                    repeat
+                                        task.wait(0.05)
+                                        AutoHaki()
+                                        EquipWeapon(SelectWeapon)
+                                        POSCAKE = v.HumanoidRootPart.CFrame
+                                        Tween2Tween2(v.HumanoidRootPart.CFrame * Pos)
+                                    until getgenv().AutoDoughKing == false or 
+                                          game:GetService("ReplicatedStorage"):FindFirstChild("Cake Prince") or 
+                                          not v.Parent or 
+                                          v.Humanoid.Health <= 0
+                                end
+                            end
+                        else
+                            Tween2(CFrame.new(-1820.063, 210.748, -12297.496))
+                        end
+                    end
+                elseif game.ReplicatedStorage:FindFirstChild("Dough King") or 
+                       game:GetService("Workspace").Enemies:FindFirstChild("Dough King") then
+                    if game:GetService("Workspace").Enemies:FindFirstChild("Dough King") then
+                        for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do 
+                            if v.Name == "Dough King" then
+                                repeat
+                                    task.wait(0.05)
+                                    AutoHaki()
+                                    EquipWeapon(SelectWeapon)
+                                    v.HumanoidRootPart.CanCollide = false
+                                    Tween2(v.HumanoidRootPart.CFrame * Pos)
+                                until getgenv().AutoDoughKing == false or 
+                                      not v.Parent or 
+                                      v.Humanoid.Health <= 0
+                            end    
+                        end    
+                    else
+                        Tween2(CFrame.new(-2009.280, 4532.972, -14937.308))
+                    end
+                elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Red Key") or 
+                       game.Players.LocalPlayer.Character:FindFirstChild("Red Key") then
+                    local args = {
+                        [1] = "CakeScientist",
+                        [2] = "Check"
+                    }
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+                else
+                    if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == true then
+                        if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Diablo") or 
+                           string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Deandre") or 
+                           string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Urban") then
+                            if game:GetService("Workspace").Enemies:FindFirstChild("Diablo") or 
+                               game:GetService("Workspace").Enemies:FindFirstChild("Deandre") or 
+                               game:GetService("Workspace").Enemies:FindFirstChild("Urban") then
+                                for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                                    if v.Name == "Diablo" or v.Name == "Deandre" or v.Name == "Urban" then
+                                        if v:FindFirstChild("Humanoid") and 
+                                           v:FindFirstChild("HumanoidRootPart") and 
+                                           v.Humanoid.Health > 0 then
+                                            repeat
+                                                task.wait(0.05)
+                                                AutoHaki()
+                                                EquipWeapon(SelectWeapon)    
+                                                v.HumanoidRootPart.CanCollide = false
+                                                v.Humanoid.WalkSpeed = 0
+                                                Tween2(v.HumanoidRootPart.CFrame * Pos)                                                    
+                                                sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRadius", math.huge)
+                                            until getgenv().AutoDoughKing == false or 
+                                                  v.Humanoid.Health <= 0 or 
+                                                  not v.Parent or 
+                                                  game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") or 
+                                                  game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice")
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+local DarkBe = Tabs.Item:AddToggle("DarkBe", {Title = "Auto Darkbeard", Default = false })
+DarkBe:OnChanged(function(Value)
+    getgenv().AutoDarkbeard = Value
+end)
+spawn(function()
+    while task.wait(0.1) do
+        if getgenv().AutoDarkbeard and Second_Sea then
+            pcall(function()
+                local enemies = game:GetService("Workspace").Enemies
+                local player = game:GetService("Players").LocalPlayer
+                if enemies:FindFirstChild("Darkbeard") then
+                    for _, v in pairs(enemies:GetChildren()) do
+                        if v.Name == "Darkbeard" and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                            repeat
+                                task.wait(0.05)
+                                AutoHaki()
+                                EquipWeapon(SelectWeapon)
+                                v.HumanoidRootPart.CanCollide = false
+                                v.Humanoid.WalkSpeed = 0           
+                                Tween2(v.HumanoidRootPart.CFrame * Pos)
+                            until not getgenv().AutoDarkbeard or not v.Parent or v.Humanoid.Health <= 0
+                        end
+                    end
+                elseif player.Backpack:FindFirstChild("Fist of Darkness") or player.Character:FindFirstChild("Fist of Darkness") then
+                    repeat
+                        task.wait(0.1)
+                        Tween2(CFrame.new(3778.584, 15.791, -3499.404))
+                        EquipWeapon("Fist of Darkness")
+                    until not getgenv().AutoDarkbeard
+                elseif game:GetService("ReplicatedStorage"):FindFirstChild("Darkbeard") then
+                    Tween2(game:GetService("ReplicatedStorage"):FindFirstChild("Darkbeard").HumanoidRootPart.CFrame * Pos)
+                end
+            end)
+        end
+    end
+end)
 -------------------------------------------------Tab Volcano----------------------------------------------------------------------------------
 local PlayersService = game:GetService("Players")
 local RunService = game:GetService("RunService")

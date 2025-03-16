@@ -7100,16 +7100,34 @@ function FPSBooster()
     end
 end
 
-Tabs.Setting:AddButton(
-    {
-        Title = "No Frog",
-        Description = "",
-        Callback = function()
-           game:GetService("Lighting").LightingLayers:Destroy()
-           game:GetService("Lighting").Sky:Destroy()
-           game.Lighting.FogEnd = 9e9
-   end,
-  }
+local Nofrog = Tabs.Setting:AddButton("Nofrog", {Title = "No Frog", Default = false})
+Nofrog:OnChanged(
+    function(Value)
+        getgenv().NoFrog = Value
+    end
+)
+spawn(
+    function()
+        while true do
+            if getgenv().NoFrog then
+                pcall(
+                    function()
+                        local lighting = game:GetService("Lighting")
+                        if lighting:FindFirstChild("LightingLayers") then
+                            lighting.LightingLayers:Destroy()
+                        end
+                        if lighting:FindFirstChild("Sky") then
+                            lighting.Sky:Destroy()
+                        end
+                    end
+                )
+            end
+            wait(1)
+            while not getgenv().NoFrog do
+                wait(1)
+            end
+        end
+    end
 )
 
 Tabs.Setting:AddButton(
@@ -10224,7 +10242,7 @@ spawn(
                 else
                      local Skibidi = {
                         ["NPC"] = "Dragon Hunter",
-                        ["Command"] = "Hunt"
+                        [2] = "2"
                     }
                     game:GetService("ReplicatedStorage").Modules.Net:FindFirstChild("RF/DragonHunter"):InvokeServer(unpack(Skibidi));
                     local Sbidiki = {
@@ -11890,7 +11908,7 @@ spawn(
                         local args = {
                             [1] = "RaidsNpc",
                             [2] = "Select",
-                            [3] = SelectChip
+                            [3] = "SelectChip"
                         }
                         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
                     end

@@ -6931,30 +6931,6 @@ spawn(function()
     end
 end)
 
-local Spin =
-    Tabs.Settings:AddToggle("Spin", {Title = "Spin Position", Description = "Spin Position When Farm", Default = true})
-Spin:OnChanged(
-    function(Value)
-        getgenv().SpinPos = Value
-    end
-)
-spawn(
-    function()
-        while wait() do
-            if getgenv().SpinPos then
-                Pos = CFrame.new(0, PosY, -20)
-                wait(0.1)
-                Pos = CFrame.new(-20, PosY, 0)
-                wait(0.1)
-                Pos = CFrame.new(0, PosY, 20)
-                wait(0.1)
-                Pos = CFrame.new(20, PosY, 0)
-            else
-                Pos = CFrame.new(0, PosY, 0)
-            end
-        end
-    end
-)
 local Slider =
     Tabs.Settings:AddSlider(
     "Slider",

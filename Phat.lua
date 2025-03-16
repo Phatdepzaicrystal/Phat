@@ -10052,7 +10052,10 @@ spawn(function()
         end
     end
 end)
-
+Tabs.Item:AddParagraph({
+     Title = "Farm Boss Prenium",
+     Content = string.rep("-", 30)
+})
 local Ripindra = Tabs.Item:AddToggle("Ripindra", {Title = "Kill Rip Indra", Default = false })
 Ripindra:OnChanged(function(Value)
     getgenv().AutoRipIndra = Value
@@ -10305,6 +10308,233 @@ spawn(function()
             end)
         end
     end
+end)
+Tabs.Item:AddParagraph({
+     Title = "Farm Observation",
+     Content = string.rep("-", 30)
+})
+local ObservationRange = Tabs.Item:AddParagraph({
+    Title = "Observation Level",
+    Content = ""
+})
+spawn(function()
+    local lastValue = game:GetService("Players").LocalPlayer.VisionRadius.Value
+    while wait(0.1) do
+        pcall(function()
+            local currentValue = game:GetService("Players").LocalPlayer.VisionRadius.Value
+            if currentValue ~= lastValue then
+                ObservationRange:SetDesc("Observation Range Level: " .. math.floor(currentValue))
+                lastValue = currentValue
+            end
+        end)
+    end
+end)
+local Kenv2 = Tabs.Item:AddToggle("Kenv2", {Title = "Auto UP Observation V2", Default = false })
+Kenv2:OnChanged(function(Value)
+    getgenv().AutoObservationHakiV2 = Value
+end)    
+spawn(function()
+    local lastUpdateTime = tick()
+    while task.wait(0.1) do
+        pcall(function()
+            if getgenv().AutoObservationHakiV2 and World3 then
+                if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false then
+                    if tick() - lastUpdateTime >= 1 then
+                        Tweem2(CFrame.new(-12444.78515625, 332.40396118164, -7673.1806640625))
+                        lastUpdateTime = tick()
+                    end
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("CitizenQuestProgress", "Citizen")
+                    task.wait(1)
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", "CitizenQuest", 1)
+                else
+                    if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Defeat 50 Forest Pirates") then
+                        if game:GetService("Workspace").Enemies:FindFirstChild("Forest Pirate") then
+                            for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                                if v.Name == "Forest Pirate" then
+                                    repeat
+                                        if not game.Players.LocalPlayer.Character:FindFirstChild("HasBuso") then
+                                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
+                                        end
+                                        EquipWeapon(SelectWeapon)
+                                        Tween2(v.HumanoidRootPart.CFrame * Pos)
+                                        PosHee = v.HumanoidRootPart.CFrame
+                                        v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
+                                        v.HumanoidRootPart.CanCollide = false
+                                        v.Humanoid.WalkSpeed = 0
+                                        v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                                    until getgenv().AutoObservationHakiV2 == false or v.Humanoid.Health <= 0
+                                end
+                            end
+                        end
+                    elseif game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text == "Defeat Captain Elephant (0/1)" then
+                        if game:GetService("Workspace").Enemies:FindFirstChild("Captain Elephant") then
+                            for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                                if v.Name == "Captain Elephant" then
+                                    repeat
+                                        if not game.Players.LocalPlayer.Character:FindFirstChild("HasBuso") then
+                                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
+                                        end
+                                        EquipWeapon(SelectWeapon)
+                                        Tween2(v.HumanoidRootPart.CFrame * Pos)
+                                        if sethiddenproperty then
+                                            sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                                        end
+                                        v.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
+                                        v.HumanoidRootPart.CanCollide = false
+                                        v.Humanoid.WalkSpeed = 0
+                                        v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                                    until getgenv().AutoObservationHakiV2 == false or v.Humanoid.Health <= 0
+                                end
+                            end
+                        end
+                    end
+                end
+                if game.Players.LocalPlayer.Backpack:FindFirstChild("Banana") and 
+                    game.Players.LocalPlayer.Backpack:FindFirstChild("Apple") and 
+                    game.Players.LocalPlayer.Backpack:FindFirstChild("Pineapple") then
+                    if tick() - lastUpdateTime >= 1 then
+                        Tweem2(CFrame.new(-12444.78515625, 332.40396118164, -7673.1806640625))
+                        lastUpdateTime = tick()
+                    end
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("CitizenQuestProgress", "Citizen")
+                elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Fruit Bowl") or 
+                        game.Players.LocalPlayer.Character:FindFirstChild("Fruit Bowl") then
+                    if tick() - lastUpdateTime >= 1 then
+                        Tweem2(CFrame.new(-10920.125, 624.20275878906, -10266.995117188))
+                        lastUpdateTime = tick()
+                    end
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("KenTalk2", "Start")
+                    task.wait(1)
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("KenTalk2", "Buy")
+                end
+            end
+        end)
+    end
+end)
+spawn(function()
+    local lastUpdate = tick()
+    while true do
+        task.wait(0.1)
+        pcall(function()
+            if getgenv().AutoObservationHakiV2 and World3 then
+                if sethiddenproperty then
+                    if tick() - lastUpdate >= 1 then
+                        sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                        lastUpdate = tick()
+                    end
+                end
+            end
+        end)
+    end
+end)
+spawn(function()
+    game:GetService("RunService").Heartbeat:Connect(function()
+        pcall(function()
+            if getgenv().AutoObservationHakiV2 and World3 then
+                local character = game:GetService("Players").LocalPlayer.Character
+                if character and character:FindFirstChild("Humanoid") then
+                    local humanoid = character.Humanoid
+                    if humanoid:GetState() ~= Enum.HumanoidStateType.Physics then
+                        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+                    end
+                end
+            end
+        end)
+    end)
+end)
+spawn(function()
+    pcall(function()
+        game:GetService("RunService").Heartbeat:Connect(function()
+            task.wait(0.1)
+            if getgenv().AutoObservationHakiV2 and getgenv().StartMagnet then
+                local enemies = game.Workspace.Enemies:GetChildren()
+                for i, v in ipairs(enemies) do
+                    if v.Name == "Forest Pirate" and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                        local humanoidRootPart = v.HumanoidRootPart
+                        if humanoidRootPart.CanCollide ~= false then
+                            humanoidRootPart.CanCollide = false
+                        end
+                        if humanoidRootPart.Size ~= Vector3.new(50, 50, 50) then
+                            humanoidRootPart.Size = Vector3.new(50, 50, 50)
+                        end
+                        if humanoidRootPart.CFrame ~= PosHee then
+                            humanoidRootPart.CFrame = PosHee
+                        end
+                    end
+                end
+            end
+        end)
+    end)
+end)
+spawn(function()
+    game:GetService("RunService").Heartbeat:Connect(function()
+        pcall(function()
+            if getgenv().AutoObservationHakiV2 and getgenv().StartMagnet then
+                CheckQuest()
+                local enemies = game.Workspace.Enemies:GetChildren()
+                for i, v in ipairs(enemies) do
+                    if v.Name == Ms and v:FindFirstChild("Humanoid") then
+                        local humanoid = v.Humanoid
+                        if humanoid.Health > 0 then
+                            humanoid:ChangeState(11)
+                            task.wait(0.1)
+                            humanoid:ChangeState(14)
+                        end
+                    end
+                end
+            end
+        end)
+    end)
+end)
+local FarmKen = Tabs.Item:AddToggle("FarmKen", {Title = "Farm Observation", Default = false })
+FarmKen:OnChanged(function(Value)
+    getgenv().AutoObservation = Value
+end)
+spawn(function()
+    pcall(function()
+        while task.wait(0.1) do
+            if getgenv().AutoObservation then
+                if game:GetService("Players").LocalPlayer.VisionRadius.Value >= 5000 then
+                    Alert:create("You Have Max Points")
+                    task.wait(1)
+                else
+                    local enemyName, spawnPos
+                    local player = game:GetService("Players").LocalPlayer
+                    local workspaceEnemies = game:GetService("Workspace").Enemies
+                    local gui = player.PlayerGui.ScreenGui
+                    if Second_Sea then
+                        enemyName = "Lava Pirate [Lv. 1200]"
+                        spawnPos = CFrame.new(-5478.39209, 15.9775667, -5246.9126)
+                    elseif First_Sea then
+                        enemyName = "Galley Captain"
+                        spawnPos = CFrame.new(5533.29785, 88.1079102, 4852.3916)
+                    elseif Third_Sea then
+                        enemyName = "Venomous Assailant"
+                        spawnPos = CFrame.new(4638.78564453125, 1078.94091796875, 881.8002319335938)
+                    end
+                    local enemy = workspaceEnemies:FindFirstChild(enemyName)
+                    if enemy then
+                        if gui:FindFirstChild("ImageLabel") then
+                            repeat
+                                task.wait(0.1)
+                                player.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(3, 0, 0)
+                            until not getgenv().AutoObservation or not gui:FindFirstChild("ImageLabel")
+                        else
+                            repeat
+                                task.wait(0.1)
+                                player.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 50, 0)
+                                if not gui:FindFirstChild("ImageLabel") and getgenv().AutoObservation_Hop then
+                                    game:GetService("TeleportService"):Teleport(game.PlaceId, player)
+                                end
+                            until not getgenv().AutoObservation or gui:FindFirstChild("ImageLabel")
+                        end
+                    else
+                        Tweem2(spawnPos)
+                    end
+                end
+            end
+        end
+    end)
 end)
 -------------------------------------------------Tab Volcano----------------------------------------------------------------------------------
 local PlayersService = game:GetService("Players")

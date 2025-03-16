@@ -31,6 +31,7 @@ local Tabs = {
     Item = Window:AddTab({Title = "Get Item", Icon = "sword"}),
     Fish = Window:AddTab({Title = "Sea Event", Icon = "anchor"}),
     Volcanic = Window:AddTab({Title = "Volcano Event", Icon = "tent"}),	
+    S =	Window:AddTab({Title = "Setting For Sea Event", Icon = "layers"}),	
     Teleport = Window:AddTab({Title = "Teleport", Icon = "map"}),
     Fruit = Window:AddTab({Title = "Fruit", Icon = "apple"}),
     Raid = Window:AddTab({Title = "Raid", Icon = "target"}),
@@ -14121,7 +14122,134 @@ spawn(
     end
 )
 --------------------------------
+--------------------------------
 local LeviIsland = Tabs.Fish:AddSection("Leviathan Island")
+
+local AutoFindFrozenDimension =
+    Tabs.Fish:AddToggle(
+    "AutoFindFrozenDimension",
+    {
+        Title = "Auto Find Frozen Dimension",
+        Description = "",
+        Default = false
+    }
+)
+
+Options.AutoFindFrozenDimension:SetValue(false)
+AutoFindFrozenDimension:OnChanged(
+    function(state)
+        _G.AutoFindFrozenDimension = state
+    end
+)
+
+local AvailableSeats = {}
+local IsFindingBoat = false
+local IslandFound = false
+
+RunService.RenderStepped:Connect(
+    function()
+        if not _G.AutoFindFrozenDimension then
+            IslandFound = false
+            return
+        end
+
+        local LocalPlayer = PlayersService.LocalPlayer
+        local Character = LocalPlayer.Character
+        if not Character or not Character:FindFirstChild("Humanoid") then
+            return
+        end
+
+        local function FindAndMoveToBoat()
+            if IsFindingBoat then
+                return
+            end
+            IsFindingBoat = true
+
+            for _, seat in pairs(AvailableSeats) do
+                if seat and seat.Parent and seat.Name == "VehicleSeat" and not seat.Occupant then
+                    Tween2(seat.CFrame)
+                    break
+                end
+            end
+
+            IsFindingBoat = false
+        end
+
+        local Humanoid = Character.Humanoid
+        local OnBoat = false
+        local CurrentSeat = nil
+
+        for _, boat in pairs(Workspace.Boats:GetChildren()) do
+            local Seat = boat:FindFirstChild("VehicleSeat")
+            if Seat and Seat.Occupant == Humanoid then
+                OnBoat = true
+                CurrentSeat = Seat
+                AvailableSeats[boat.Name] = Seat
+            elseif Seat and not Seat.Occupant then
+                FindAndMoveToBoat()
+            end
+        end
+
+        if not OnBoat then
+            return
+        end
+
+        CurrentSeat.MaxSpeed = BoatSpeed
+        CurrentSeat.CFrame =
+            CFrame.new(Vector3.new(CurrentSeat.Position.X, CurrentSeat.Position.Y, CurrentSeat.Position.Z)) *
+            CurrentSeat.CFrame.Rotation
+        VirtualInput:SendKeyEvent(true, "W", false, game)
+
+        for _, part in pairs(Workspace.Boats:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+
+        for _, part in pairs(Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+
+        local IslandNames = {
+            "ShipwreckIsland",
+            "SandIsland",
+            "TreeIsland",
+            "TinyIsland",
+            "MysticIsland",
+            "KitsuneIsland",
+            "FrozenDimension"
+        }
+
+        for _, islandName in ipairs(IslandNames) do
+            local Island = Workspace.Map:FindFirstChild(islandName)
+            if Island and Island:IsA("Model") then
+                Island:Destroy()
+            end
+        end
+
+        local PrehistoricIsland = Workspace.Map:FindFirstChild("FrozenDimension")
+        if PrehistoricIsland then
+            VirtualInput:SendKeyEvent(false, "W", false, game)
+            _G.AutoFindPrehistoric = false
+
+            if not IslandFound then
+                Fluent:Notify(
+                    {
+                        Title = "Frozen Dimension Spawn",
+                        Content = "Phat Hub Notification",
+                        Duration = 10
+                    }
+                )
+                IslandFound = true
+            end
+
+            return
+        end
+    end
+)
+
 local ToggleTPFrozenDimension = Tabs.Fish:AddToggle("ToggleTPFrozenDimension", {
     Title = "Tween To Frozen Dimension",
     Description = "",
@@ -14145,40 +14273,248 @@ spawn(function()
         end
     end
 end);
-local AttackLevi = Tabs.Fish:AddToggle("AttackLevi", {Title = "Auto Attack Leviathan", Default = false })
-AttackLevi:OnChanged(function(state)
-    getgenv().KillLevi = state
+
+local AttackLevi = Tabs.Fish:AddToggle("AttackLevi", {Title = "Auto Attack Leviathan [BETA]", Default = false})
+AttackLevi:OnChanged(
+    function(state)
+        getgenv().KillLevi = state
+    end
+)
+spawn(
+    function()
+        while wait(0.5) do
+            if getgenv().KillLevi and Third_Sea then
+                pcall(
+                    function()
+                        for _, v in pairs(game:GetService("Workspace").SeaBeasts:GetChildren()) do
+                            if v.Name == "Leviathan" and v:FindFirstChild("HumanoidRootPart") then
+                                repeat
+                                    wait(0.2)
+                                    if
+                                        (game.Players.LocalPlayer.Character.HumanoidRootPart.Position -
+                                            v.HumanoidRootPart.Position).Magnitude > 10
+                                     then
+                                        Tween2(v.HumanoidRootPart.CFrame * CFrame.new(0, 500, 0))
+                                    end
+                                    if not getgenv().SeaSkill then
+                                        getgenv().SeaSkill = true
+                                        AutoHaki()
+                                        AimBotSkillPosition = v.HumanoidRootPart
+                                        Skillaimbot = true
+                                    end
+                                until not v:FindFirstChild("HumanoidRootPart") or not getgenv().KillLevi
+
+                                getgenv().SeaSkill = false
+                                Skillaimbot = false
+                            end
+                        end
+                    end
+                )
+            end
+        end
+    end
+)
+
+local Ship = Tabs.S:AddSection("Setting Ship")
+local NoRock = Tabs.S:AddToggle("NoRock", {Title = "No Clip Ship", Default = true })
+NoRock:OnChanged(function(Value)
+    getgenv().GoThroughRocks = Value
 end)
 spawn(function()
-    while task.wait(0.5) do
-        if getgenv().KillLevi and Third_Sea then
-            pcall(function()
-                for _, v in pairs(game:GetService("Workspace").SeaBeasts:GetChildren()) do
-                    if v.Name == "Leviathan" and v:FindFirstChild("HumanoidRootPart") then
-                        repeat
-                            task.wait(0.2)             
-                            if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).Magnitude > 10 then
-                                Tween2(v.HumanoidRootPart.CFrame * CFrame.new(0, 500, 0))
-                            end                            
-                            if not getgenv().SeaSkill then
-                                getgenv().SeaSkill = true
-                            end                            
-                            if not IsHakiActive() then
-                                AutoHaki()
-                            end                            
-                            AimBotSkillPosition = v.HumanoidRootPart
-                            Skillaimbot = true                            
-                        until not v:FindFirstChild("HumanoidRootPart") or not getgenv().KillLevi                        
-                        getgenv().SeaSkill = false
-                        Skillaimbot = false
+    while wait(1) do
+        if getgenv().GoThroughRocks or getgenv().SailBoat then
+            for _, boat in ipairs(game:GetService("Workspace").Boats:GetChildren()) do
+                for _, part in ipairs(boat:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
                     end
                 end
-            end)
+            end
+        else
+            for _, boat in ipairs(game:GetService("Workspace").Boats:GetChildren()) do
+                for _, part in ipairs(boat:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
         end
     end
 end)
 
-
+Tabs.S:AddParagraph({
+    Title = "Setting For Leviathan",
+    Content = string.rep("-", 21)
+})
+Tabs.S:AddParagraph({
+    Title = "Choose Weapons For Leviathan",
+})
+local UseFruit1 = Tabs.S:AddToggle("Toggle", {
+    Title = "Select Use Fruit",
+    Default = true
+})
+UseFruit1:OnChanged(function(value)
+    getgenv().UseSeaFruitSkill = value
+end)
+local UseMelee1 = Tabs.S:AddToggle("UseMelee1", {
+    Title = "Select Use Melee",
+    Default = true
+})
+UseMelee1:OnChanged(function(value)
+    getgenv().UseSeaMeleeSkill = value
+end)
+local UseSword1 = Tabs.S:AddToggle("UseSword1", {
+    Title = "Select Use Sword",
+    Default = true
+})
+UseSword1:OnChanged(function(value)
+    getgenv().UseSeaSwordSkill = value
+end)
+local UseGun1 = Tabs.S:AddToggle("UseGun1", {
+    Title = "Select Use Gun",
+    Default = true
+})
+UseGun1:OnChanged(function(value)
+    getgenv().UseSeaGunSkill = value
+end)
+Tabs.S:AddParagraph({
+    Title = "Select Skill Fruit",
+})
+local UseSkillFruit = Tabs.S:AddToggle("UseSkillFruit", {
+    Title = "Skill Fruit Z",
+    Default = true
+})
+UseSkillFruit:OnChanged(function(value)
+    getgenv().SkillFruitZ = value
+end)
+local UseSkillFruit1 = Tabs.S:AddToggle("UseSkillFruit1", {
+    Title = "Skill Fruit X",
+    Default = true
+})
+UseSkillFruit1:OnChanged(function(value)
+    getgenv().SkillFruitX = value
+end)
+local UseSkillFruit2 = Tabs.S:AddToggle("UseSkillFruit2", {
+    Title = "Skill Fruit C",
+    Default = true
+})
+UseSkillFruit2:OnChanged(function(value)
+    getgenv().SkillFruitC = value
+end)
+local UseSkillFruit3 = Tabs.S:AddToggle("UseSkillFruit3", {
+    Title = "Skill Fruit V",
+    Default = false
+})
+UseSkillFruit3:OnChanged(function(value)
+    getgenv().SkillFruitV = value
+end)
+local UseSkillFruit4 = Tabs.S:AddToggle("UseSkillFruit4", {
+    Title = "Skill Fruit F",
+    Default = false
+})
+UseSkillFruit4:OnChanged(function(value)
+    getgenv().SkillFruitF = value
+end)
+Tabs.S:AddParagraph({
+    Title = "Select Skill Melee",
+})
+local UseSkillMelee = Tabs.S:AddToggle("UseSkillMelee", {
+    Title = "Skill Melee Z",
+    Default = true
+})
+UseSkillMelee:OnChanged(function(value)
+    getgenv().SkillMeleeZ = value
+end)
+local UseSkillMelee1 = Tabs.S:AddToggle("UseSkillMelee1", {
+    Title = "Skill Melee X",
+    Default = true
+})
+UseSkillMelee1:OnChanged(function(value)
+    getgenv().SkillMeleeX = value
+end)
+local UseSkillMelee2 = Tabs.S:AddToggle("UseSkillMelee2", {
+    Title = "Skill Melee C",
+    Default = true
+})
+UseSkillMelee2:OnChanged(function(value)
+    getgenv().SkillMeleeC = value
+end)
+Tabs.S:AddParagraph({
+    Title = "Setting Skill Sword And Gun",
+    Content = string.rep("-", 21)
+})
+Tabs.S:AddParagraph({
+    Title = "Select Skill Sword And Gun",
+})
+local UseSkillSword = Tabs.S:AddToggle("UseSkillSword", {
+    Title = "Sword And Gun Skill Z",
+    Default = true
+})
+UseSkillSword:OnChanged(function(value)
+    getgenv().SkillSwordZ = value
+    getgenv().SkillGunZ = value
+end) 
+local UseSkillSword1 = Tabs.S:AddToggle("UseSkillSword1", {
+    Title = "Sword And Gun Skill X",
+    Default = true
+})
+UseSkillSword1:OnChanged(function(value)
+    getgenv().SkillSwordX = value
+    getgenv().SkillGunX = value
+end)
+local gg = getrawmetatable(game)
+local old = gg.__namecall
+setreadonly(gg, false)
+gg.__namecall = newcclosure(function(...)
+    local method = getnamecallmethod()
+    local args = {...}    
+    if tostring(method) == "FireServer" then
+        if tostring(args[1]) == "RemoteEvent" then
+            if tostring(args[2]) ~= "true" and tostring(args[2]) ~= "false" then
+                if Skillaimbot then
+                    args[2] = AimBotSkillPosition
+                    return old(unpack(args))
+                end
+            end
+        end
+    end
+    return old(...)
+end)
+local function useSkill(skillKey, holdTime)
+    game:service('VirtualInputManager'):SendKeyEvent(true, skillKey, false, game)
+    wait(holdTime or 0.1)
+    game:service('VirtualInputManager'):SendKeyEvent(false, skillKey, false, game)
+end
+spawn(function()
+    while task.wait(0.5) do
+        pcall(function()
+            if UseSkill then
+                for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    if v.Name == MonFarm and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") 
+                    and v.Humanoid.Health <= v.Humanoid.MaxHealth * getgenv().Kill_At / 100 then                        
+                        if getgenv().SkillZ then useSkill("Z", getgenv().HoldSKillZ) end
+                        if getgenv().SkillX then useSkill("X", getgenv().HoldSKillX) end
+                        if getgenv().SkillC then useSkill("C", getgenv().HoldSKillC) end
+                    end
+                end
+            end
+        end)
+    end
+end)
+spawn(function()
+    while wait(0.5) do
+        pcall(function()
+            if UseGunSkill then
+                for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                    if v.Name == MonFarm and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") 
+                    and v.Humanoid.Health <= v.Humanoid.MaxHealth * getgenv().Kill_At / 100 then                        
+                        if getgenv().SkillZ then useSkill("Z", 0.1) end
+                    end
+                end
+            end
+        end)
+    end
+end)
 --------------------------------------------------
 local v171 = Tabs.Volcanic:AddToggle("ToggleDefendVolcano", {
     Title = "Auto Start Event",
@@ -14266,9 +14602,9 @@ spawn(function()
     end
 end);
 
-local FarmPri = Tabs.Volcanic:AddSection("Setting For Event")
+local FarmPri = Tabs.S:AddSection("Setting For Volcano Event")
 
-local v107 = Tabs.Volcanic:AddToggle("ToggleMelee", {
+local v107 = Tabs.S:AddToggle("ToggleMelee", {
     Title = "Spam Skill Melle",
     Description = "",
     Default = false
@@ -14276,7 +14612,7 @@ local v107 = Tabs.Volcanic:AddToggle("ToggleMelee", {
 v107:OnChanged(function(v402)
     _G.UseMelee = v402;
 end);
-local v109 = Tabs.Volcanic:AddToggle("ToggleSword", {
+local v109 = Tabs.S:AddToggle("ToggleSword", {
     Title = "Spam Skill Sword",
     Description = "",
     Default = false
@@ -14284,7 +14620,7 @@ local v109 = Tabs.Volcanic:AddToggle("ToggleSword", {
 v109:OnChanged(function(v403)
     _G.UseSword = v403;
 end);
-local v110 = Tabs.Volcanic:AddToggle("ToggleGun", {
+local v110 = Tabs.S:AddToggle("ToggleGun", {
     Title = "Spam Skill Gun",
     Description = "",
     Default = false
@@ -14292,7 +14628,7 @@ local v110 = Tabs.Volcanic:AddToggle("ToggleGun", {
 v110:OnChanged(function(v404)
     _G.UseGun = v404;
 end);
-local v111 = Tabs.Volcanic:AddToggle("ToggleFruit", {
+local v111 = Tabs.S:AddToggle("ToggleFruit", {
     Title = "Spam Skill Fruit",
     Description = "",
     Default = false
@@ -14405,3 +14741,4 @@ spawn(function()
         end
     end
 end);
+----------------------------------------

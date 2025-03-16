@@ -7100,7 +7100,7 @@ function FPSBooster()
     end
 end
 
-local Nofrog = Tabs.Setting:AddButton("Nofrog", {Title = "No Frog", Default = false})
+local Nofrog = Tabs.Setting:AddToggle("Nofrog", {Title = "No Frog", Default = false})
 Nofrog:OnChanged(
     function(Value)
         getgenv().NoFrog = Value
@@ -10241,7 +10241,7 @@ spawn(
                     Tween2(DragonHunterNPC)
                 else
                      local Skibidi = {
-                        ["NPC"] = "Dragon Hunter",
+                        [1] = "Dragon Hunter",
                         [2] = "2"
                     }
                     game:GetService("ReplicatedStorage").Modules.Net:FindFirstChild("RF/DragonHunter"):InvokeServer(unpack(Skibidi));

@@ -4931,7 +4931,7 @@ do
                                                 EquipTool(SelectWeapon)
                                                 v.HumanoidRootPart.CanCollide = false
                                                 v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                                                Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX, posY, posZ))
+                                                Tween2(v.HumanoidRootPart.CFrame * Pos)
                                             until v.Humanoid.Health <= 0 or not v.Parent or not _G.CastleRaid
                                             bringmob = false
                                         end

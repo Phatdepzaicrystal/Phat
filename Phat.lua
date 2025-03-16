@@ -10733,7 +10733,7 @@ spawn(function()
                 if BypassTP then
                     BTP(DojoQuestNpc)
                 else
-                    Tween(DojoQuestNpc)
+                    Tween2(DojoQuestNpc)
                 end
                 local distance = (DojoQuestNpc.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
                 if distance <= 5 then

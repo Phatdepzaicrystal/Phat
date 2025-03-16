@@ -6940,6 +6940,25 @@ spawn(function()
     end);
 end);
 
+local WaterWalk = Tabs.Setting:AddToggle("WaterWalk", {
+    Title = "Walk On Water",
+    Description = "",
+    Default = false
+});
+WaterWalk:OnChanged(function(v314)
+    _G.WalkWater = v314;
+end); 
+spawn(function()
+    while task.wait() do
+        pcall(function()
+            local waterBase = game:GetService("Workspace").Map:FindFirstChild("WaterBase-Plane")
+            if waterBase then
+                waterBase.Size = _G.WalkWater and Vector3.new(1000, 112, 1000) or Vector3.new(1000, 80, 1000)
+            end
+        end)
+    end
+end)
+
 Tabs.Setting:AddButton(
     {
         Title = "Stop Tween",

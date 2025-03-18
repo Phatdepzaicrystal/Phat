@@ -1,7 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-local keyListUrl = "https://github.com/Phatdepzaicrystal/Key/blob/main/keys.json"
+local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
 local player = Players.LocalPlayer
 
 -- ⚠️ Kiểm tra người dùng đã nhập key chưa
@@ -22,18 +22,29 @@ if success then
 
     if decodeSuccess then
         local isValid = false
+
+        -- 🔍 Duyệt từng phần tử trong danh sách
         for _, k in pairs(keys) do
-            if k == getgenv().Key then
-                isValid = true
-                break
+            if typeof(k) == "string" then
+                -- Nếu là chuỗi thì kiểm tra trực tiếp
+                if k == getgenv().Key then
+                    isValid = true
+                    break
+                end
+            elseif typeof(k) == "table" and k.code then
+                -- Nếu là object table thì kiểm tra trường 'code'
+                if k.code == getgenv().Key then
+                    isValid = true
+                    break
+                end
             end
         end
 
         if isValid then
             print("[✅] Key hợp lệ! Đang chạy script...")
             -- 👉 Chạy script chính tại đây
-            getgenv().Team = "Marines"          -- Pirates or Marines
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/Phat.lua"))()
+            getgenv().Team = "Marines"  -- hoặc "Pirates"
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
         else
             player:Kick("❌ Invalid Key")
         end

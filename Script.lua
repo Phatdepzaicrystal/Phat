@@ -81,7 +81,8 @@ if keys then
         end
 
         print("✅ Key hợp lệ, chạy script...")
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubTH"))()
+        getgenv().Language = "English"
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
     else
         player:Kick("❌ Key không hợp lệ!")
     end

@@ -3,7 +3,7 @@ local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
 local key = getgenv().Key or "Phat-XXXXXXX"
 
 -- Link chứa danh sách key + hwid đã lưu (trên GitHub)
-local keysDataURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local keysDataURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
 
 -- Webhook gửi yêu cầu bind HWID nếu key chưa có HWID
 local webhookURL = "https://discord.com/api/webhooks/1351710851727364158/CLgOTMvfjEshI-HXkzCi0SK_kYZzx9qi42aZfI92R_YrYBwr3U7H9Se1dIRrMcxxrtPj"

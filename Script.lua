@@ -1,10 +1,11 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
 
 local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
+local hwidListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/hwids.json"
+local hwidUploadUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/contents/hwids.json"
+
 local player = Players.LocalPlayer
-local hwid = RbxAnalyticsService:GetClientId()
 
 -- ⚠️ Kiểm tra người dùng đã nhập key chưa
 if not getgenv().Key then
@@ -12,51 +13,86 @@ if not getgenv().Key then
     return
 end
 
--- 📥 Tải danh sách key từ GitHub
-local success, response = pcall(function()
-    return game:HttpGet(keyListUrl)
-end)
+-- 🖥️ Lấy HWID từ hệ thống
+local function getHWID()
+    local handle = io.popen("wmic csproduct get uuid")
+    local result = handle:read("*a")
+    handle:close()
+    return result:match("[0-9A-F-]+") or "Unknown"
+end
 
-if success then
-    local decodeSuccess, keys = pcall(function()
-        return HttpService:JSONDecode(response)
+local hwid = getHWID()
+print("🔹 HWID của bạn: ", hwid)
+
+-- 📥 Tải danh sách key từ GitHub
+local function fetchData(url)
+    local success, response = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if success then
+        local decodeSuccess, data = pcall(function()
+            return HttpService:JSONDecode(response)
+        end)
+        if decodeSuccess then
+            return data
+        end
+    end
+    return nil
+end
+
+local keys = fetchData(keyListUrl)
+local hwids = fetchData(hwidListUrl)
+
+if not keys or not hwids then
+    player:Kick("❌ Không thể kết nối đến máy chủ xác thực key.")
+    return
+end
+
+-- ✅ Kiểm tra key có hợp lệ không
+local isValidKey = false
+for _, k in pairs(keys) do
+    if typeof(k) == "table" and k.code == getgenv().Key then
+        isValidKey = true
+        break
+    end
+end
+
+if not isValidKey then
+    player:Kick("❌ Invalid Key")
+    return
+end
+
+-- 🔍 Kiểm tra HWID có trong danh sách không
+local isHWIDRegistered = false
+for _, h in pairs(hwids) do
+    if h.hwid == hwid then
+        isHWIDRegistered = true
+        break
+    end
+end
+
+if not isHWIDRegistered then
+    -- 🚀 Nếu HWID chưa có, thêm vào GitHub
+    local newHWID = {
+        hwid = hwid,
+        username = player.Name
+    }
+    table.insert(hwids, newHWID)
+
+    local jsonData = HttpService:JSONEncode(hwids)
+    local successPost, postResponse = pcall(function()
+        return HttpService:PostAsync(hwidUploadUrl, jsonData)
     end)
 
-    if decodeSuccess then
-        local isValid = false
-
-        -- 🔍 Duyệt từng phần tử trong danh sách
-        for _, entry in pairs(keys) do
-            if typeof(entry) == "table" and entry.code then
-                if entry.code == getgenv().Key then
-                    if entry.hwid == nil then
-                        -- Chưa có HWID → Cập nhật HWID
-                        entry.hwid = hwid
-                        isValid = true
-                        break
-                    elseif entry.hwid == hwid then
-                        -- HWID trùng khớp
-                        isValid = true
-                        break
-                    else
-                        -- HWID không khớp
-                        player:Kick("❌ HWID không hợp lệ!")
-                        return
-                    end
-                end
-            end
-        end
-
-        if isValid then
-            print("[✅] Key hợp lệ! Đang chạy script...")
-            getgenv().Team = "Marines"  -- hoặc "Pirates"
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
-        else
-            player:Kick("❌ Invalid Key")
-        end
+    if successPost then
+        print("[✅] HWID đã được lưu lên GitHub!")
     else
-        player:Kick("❌ Lỗi giải mã danh sách key.")
+        print("[❌] Không thể lưu HWID lên GitHub!")
     end
-else
-    player:Kick("❌ Không thể kết nối đến máy chủ xác thực key.")
 end
+
+print("[✅] Key & HWID hợp lệ! Đang chạy script...")
+
+-- 👉 Chạy script chính tại đây
+getgenv().Team = "Marines"  -- hoặc "Pirates"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()

@@ -1,8 +1,10 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
 
 local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
 local player = Players.LocalPlayer
+local hwid = RbxAnalyticsService:GetClientId()
 
 -- ⚠️ Kiểm tra người dùng đã nhập key chưa
 if not getgenv().Key then
@@ -24,25 +26,29 @@ if success then
         local isValid = false
 
         -- 🔍 Duyệt từng phần tử trong danh sách
-        for _, k in pairs(keys) do
-            if typeof(k) == "string" then
-                -- Nếu là chuỗi thì kiểm tra trực tiếp
-                if k == getgenv().Key then
-                    isValid = true
-                    break
-                end
-            elseif typeof(k) == "table" and k.code then
-                -- Nếu là object table thì kiểm tra trường 'code'
-                if k.code == getgenv().Key then
-                    isValid = true
-                    break
+        for _, entry in pairs(keys) do
+            if typeof(entry) == "table" and entry.code then
+                if entry.code == getgenv().Key then
+                    if entry.hwid == nil then
+                        -- Chưa có HWID → Cập nhật HWID
+                        entry.hwid = hwid
+                        isValid = true
+                        break
+                    elseif entry.hwid == hwid then
+                        -- HWID trùng khớp
+                        isValid = true
+                        break
+                    else
+                        -- HWID không khớp
+                        player:Kick("❌ HWID không hợp lệ!")
+                        return
+                    end
                 end
             end
         end
 
         if isValid then
             print("[✅] Key hợp lệ! Đang chạy script...")
-            -- 👉 Chạy script chính tại đây
             getgenv().Team = "Marines"  -- hoặc "Pirates"
             loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
         else

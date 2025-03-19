@@ -83,8 +83,8 @@ if keys and hwids then
         end
 
         -- 👉 Chạy script chính
-        getgenv().Team = "Marines"  -- hoặc "Pirates"
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
+        getgenv().Language = "English"
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
     else
         player:Kick("❌ Invalid Key")
     end

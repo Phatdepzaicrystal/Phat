@@ -3,70 +3,91 @@ local Players = game:GetService("Players")
 
 local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
 local hwidListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/hwids.json"
+local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/contents/hwids.json"
+local githubToken = "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"  -- 🔥 Thay bằng token GitHub
 
 local player = Players.LocalPlayer
-local hwid = game:GetService("RbxAnalyticsService"):GetClientId() -- 📌 Lấy HWID từ thiết bị
+local hwid = player.UserId .. "-" .. game:GetService("RbxAnalyticsService"):GetClientId()  -- 📌 Tạo HWID duy nhất
 
--- ⚠️ Kiểm tra xem người chơi đã nhập key chưa
+-- ⚠️ Kiểm tra key nhập vào
 if not getgenv().Key then
     player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")
     return
 end
 
--- 📥 Tải danh sách key từ GitHub
-local function getData(url)
+-- 📥 Tải danh sách Key từ GitHub
+local function fetchJson(url)
     local success, response = pcall(function()
         return game:HttpGet(url)
     end)
-    if success then
-        local decodeSuccess, data = pcall(function()
-            return HttpService:JSONDecode(response)
-        end)
-        if decodeSuccess then
-            return data
+    return success and HttpService:JSONDecode(response) or nil
+end
+
+local keys = fetchJson(keyListUrl)
+local hwids = fetchJson(hwidListUrl)
+
+if keys and hwids then
+    local isKeyValid = false
+    local isHWIDValid = false
+
+    -- 🔍 Kiểm tra Key
+    for _, k in pairs(keys) do
+        if typeof(k) == "string" then
+            if k == getgenv().Key then
+                isKeyValid = true
+                break
+            end
+        elseif typeof(k) == "table" and k.code then
+            if k.code == getgenv().Key then
+                isKeyValid = true
+                break
+            end
         end
     end
-    return nil
-end
 
-local keys = getData(keyListUrl)
-local hwids = getData(hwidListUrl)
-
-if not keys or not hwids then
-    player:Kick("❌ Không thể kết nối đến máy chủ xác thực.")
-    return
-end
-
-local isValidKey = false
-local isValidHWID = false
-
--- 🔍 Kiểm tra key hợp lệ
-for _, k in pairs(keys) do
-    if typeof(k) == "string" then
-        if k == getgenv().Key then
-            isValidKey = true
-            break
-        end
-    elseif typeof(k) == "table" and k.code then
-        if k.code == getgenv().Key then
-            isValidKey = true
+    -- 🔍 Kiểm tra HWID đã tồn tại chưa
+    for _, h in pairs(hwids) do
+        if h == hwid then
+            isHWIDValid = true
             break
         end
     end
-end
 
--- 🔍 Kiểm tra HWID hợp lệ
-for _, h in pairs(hwids) do
-    if h == hwid then
-        isValidHWID = true
-        break
+    if isKeyValid then
+        if not isHWIDValid then
+            -- 🚀 Gửi HWID mới lên GitHub
+            table.insert(hwids, hwid)
+
+            local newContent = HttpService:JSONEncode(hwids)
+            local body = {
+                message = "🔄 Update HWIDs",
+                content = HttpService:Base64Encode(newContent),
+                sha = fetchJson(githubApiUrl).sha
+            }
+
+            local headers = {
+                ["Authorization"] = "token " .. githubToken,
+                ["Content-Type"] = "application/json"
+            }
+
+            local request = http.request({
+                Url = githubApiUrl,
+                Method = "PUT",
+                Headers = headers,
+                Body = HttpService:JSONEncode(body)
+            })
+
+            print("✅ HWID mới đã được gửi lên GitHub:", hwid)
+        else
+            print("✅ HWID hợp lệ, đang chạy script...")
+        end
+
+        -- 👉 Chạy script chính
+        getgenv().Team = "Marines"  -- hoặc "Pirates"
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
+    else
+        player:Kick("❌ Invalid Key")
     end
-end
-
-if isValidKey and isValidHWID then
-    print("[✅] Key & HWID hợp lệ! Đang chạy script...")
-    getgenv().Team = "Marines"  -- hoặc "Pirates"
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
 else
-    player:Kick("❌ Key hoặc HWID không hợp lệ.")
+    player:Kick("❌ Không thể tải danh sách Key hoặc HWID từ GitHub.")
 end

@@ -102,5 +102,5 @@ else
 end
 
 -- 🚀 Chạy script chính sau khi kiểm tra xong
-getgenv().Team = "Marines"  
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
+getgenv().Language = "English"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()

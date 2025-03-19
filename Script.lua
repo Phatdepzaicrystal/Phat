@@ -39,13 +39,13 @@ if keys then
     if validKey then
         -- Nếu key có userId nhưng không khớp tài khoản, kick
         if validKey.userId and tostring(validKey.userId) ~= tostring(player.UserId) then
-            player:Kick("❌ Key này không dành cho tài khoản của bạn!")
+            player:Kick("❌ Invail Hwid!")
             return
         end
 
         -- Nếu key có HWID nhưng không khớp, kick
         if validKey.hwid and validKey.hwid ~= hwid then
-            player:Kick("❌ Key này không dành cho thiết bị của bạn!")
+            player:Kick("❌ Invail Hwid!")
             return
         end
 

@@ -1,56 +1,72 @@
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
+-------------------------------
+local http = game:GetService("HttpService")
+local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+local key = getgenv().Key or "Phat-XXXXXXX"
 
-local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
-local player = Players.LocalPlayer
+-- Link chứa danh sách key + hwid đã lưu (trên GitHub)
+local keysDataURL = "https://github.com/Phatdepzaicrystal/Key/blob/main/keys.json"
 
--- ⚠️ Kiểm tra người dùng đã nhập key chưa
-if not getgenv().Key then
-    player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")
-    return
+-- Webhook để gửi HWID bind request (chỉ lần đầu chưa có HWID)
+local webhookURL = "https://discord.com/api/webhooks/1351710851727364158/CLgOTMvfjEshI-HXkzCi0SK_kYZzx9qi42aZfI92R_YrYBwr3U7H9Se1dIRrMcxxrtPj"
+
+-- Gửi request bind HWID (nếu key hợp lệ nhưng chưa có HWID)
+local function sendHWIDBindRequest()
+    local payload = {
+        content = "🆕 HWID Bind Request",
+        embeds = {{
+            title = "HWID Request for Key",
+            fields = {
+                { name = "Key", value = key, inline = true },
+                { name = "HWID", value = hwid, inline = true }
+            },
+            color = 16776960
+        }}
+    }
+    pcall(function()
+        http:PostAsync(webhookURL, http:JSONEncode(payload))
+    end)
 end
 
--- 📥 Tải danh sách key từ GitHub
-local success, response = pcall(function()
-    return game:HttpGet(keyListUrl)
-end)
-
-if success then
-    local decodeSuccess, keys = pcall(function()
-        return HttpService:JSONDecode(response)
+-- Kiểm tra key và hwid có hợp lệ không
+local function isValidKeyAndHWID()
+    local success, response = pcall(function()
+        return http:GetAsync(keysDataURL)
     end)
 
-    if decodeSuccess then
-        local isValid = false
+    if success then
+        local data = http:JSONDecode(response)
 
-        -- 🔍 Duyệt từng phần tử trong danh sách
-        for _, k in pairs(keys) do
-            if typeof(k) == "string" then
-                -- Nếu là chuỗi thì kiểm tra trực tiếp
-                if k == getgenv().Key then
-                    isValid = true
-                    break
+        for _, entry in pairs(data) do
+            if entry.key == key then
+                if entry.blacklisted then
+                    return false, "🚫 Key này đã bị blacklist!"
                 end
-            elseif typeof(k) == "table" and k.code then
-                -- Nếu là object table thì kiểm tra trường 'code'
-                if k.code == getgenv().Key then
-                    isValid = true
-                    break
+
+                if entry.hwid == nil or entry.hwid == "" then
+                    sendHWIDBindRequest()
+                    return true, "🆗 Key hợp lệ, HWID chưa gắn – Đang gửi yêu cầu Bind HWID!"
+                end
+
+                if entry.hwid == hwid then
+                    return true, "✅ Key và HWID hợp lệ!"
+                else
+                    return false, "❌ Invalid HWID!!"
                 end
             end
         end
-
-        if isValid then
-            print("[✅] Key hợp lệ! Đang chạy script...")
-            -- 👉 Chạy script chính tại đây
-            getgenv().Team = "Marines"  -- hoặc "Pirates"
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/Phat.lua"))()
-        else
-            player:Kick("❌ Invalid Key")
-        end
+        return false, "❌ Key không tồn tại hoặc sai định dạng!"
     else
-        player:Kick("❌ Lỗi giải mã danh sách key.")
+        return false, "⚠️ Lỗi khi tải dữ liệu key!"
     end
-else
-    player:Kick("❌ Không thể kết nối đến máy chủ xác thực key.")
 end
+
+-- Xử lý kiểm tra
+local valid, message = isValidKeyAndHWID()
+if not valid then
+    game.Players.LocalPlayer:Kick(message)
+    return
+end
+
+-- Load script chính nếu pass cả key + hwid
+getgenv().Team = "Marines"          -- Pirates or Marines
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/Phat.lua"))()

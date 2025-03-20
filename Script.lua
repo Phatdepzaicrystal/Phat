@@ -14,7 +14,7 @@ if not getgenv().Key then
     return
 end
 
--- 📥 Hàm tải JSON từ GitHub
+-- Hàm tải JSON từ GitHub
 local function fetchJson(url)
     local success, response = pcall(function()
         return game:HttpGet(url)
@@ -27,7 +27,7 @@ local keys = fetchJson(keyListUrl)
 if keys then
     local validKey = nil
 
-    -- 🔍 Kiểm tra key trong danh sách
+    -- Kiểm tra key trong danh sách
     for _, entry in pairs(keys) do
         if entry.code == getgenv().Key then
             validKey = entry
@@ -49,7 +49,7 @@ if keys then
             return
         end
 
-        -- Nếu key chưa có HWID, cập nhật HWID lên GitHub
+        --HWID, cập nhật HWID lên GitHub
         if not validKey.hwid then
             validKey.hwid = hwid
 

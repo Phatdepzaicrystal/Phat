@@ -21,7 +21,6 @@ local function fetchJson(url)
     return success and HttpService:JSONDecode(response) or nil
 end
 
--- Lấy danh sách key từ GitHub
 local keys = fetchJson(keyListUrl)
 
 if keys then
@@ -35,41 +34,30 @@ if keys then
         end
     end
 
-    -- Nếu key hợp lệ, kiểm tra userId và HWID
     if validKey then
         -- Nếu key có userId nhưng không khớp tài khoản, kick
         if validKey.userId and tostring(validKey.userId) ~= tostring(player.UserId) then
-            player:Kick("❌ Invalid HWID!")
+            player:Kick("❌ Invalid User ID!")
             return
         end
 
-        -- Nếu key có HWID nhưng không khớp, kick
+        -- Nếu HWID đã tồn tại nhưng không khớp, kick
         if validKey.hwid and validKey.hwid ~= hwid then
             player:Kick("❌ Invalid HWID!")
             return
         end
 
-        -- Nếu key chưa có HWID, cập nhật HWID lên GitHub
+        -- Nếu key chưa có HWID, lưu HWID mới vào GitHub
         if not validKey.hwid then
             validKey.hwid = hwid
 
-            -- Lấy SHA của file keys.json
-            local fileInfo = fetchJson(githubApiUrl)
-            local sha = fileInfo and fileInfo.sha or nil
-
-            if not sha then
-                warn("⚠️ Không lấy được SHA của file! Không thể cập nhật HWID!")
-                return
-            end
-
-            -- Cập nhật HWID vào danh sách keys
             local newContent = HttpService:JSONEncode(keys)
-            local encodedContent = syn and syn.crypt.base64.encode(newContent) or HttpService:JSONEncode(newContent)
+            local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
 
             local body = {
-                message = "🔄 Cập nhật HWID cho key: " .. validKey.code,
+                message = "🔄 Update HWID for key: " .. validKey.code,
                 content = encodedContent,
-                sha = sha
+                sha = fetchJson(githubApiUrl) and fetchJson(githubApiUrl).sha or ""
             }
 
             local headers = {
@@ -78,17 +66,12 @@ if keys then
             }
 
             if http and http.request then
-                local response = http.request({
+                http.request({
                     Url = githubApiUrl,
                     Method = "PUT",
                     Headers = headers,
                     Body = HttpService:JSONEncode(body)
                 })
-
-                if response and response.Body then
-                    print("📢 GitHub API Response:", response.Body)
-                end
-
                 print("✅ HWID mới đã được cập nhật trên GitHub:", hwid)
             else
                 print("⚠️ Executor không hỗ trợ `http.request`, không thể cập nhật HWID!")

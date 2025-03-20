@@ -37,7 +37,7 @@ if keys then
     if validKey then
         -- Nếu HWID đã tồn tại nhưng không khớp, kick
         if validKey.hwid and validKey.hwid ~= hwid then
-            player:Kick("❌Sai Hwid(VN)-Invalid Hwid(EN)")
+            player:Kick("❌ Key hợp lệ nhưng HWID không đúng!")
             return
         end
 
@@ -45,14 +45,27 @@ if keys then
         if not validKey.hwid then
             validKey.hwid = hwid
 
-            local newContent = HttpService:JSONEncode(keys)
+            -- Cập nhật JSON với HWID mới
+            local updatedKeys = keys
+            for _, entry in ipairs(updatedKeys) do
+                if entry.code == validKey.code then
+                    entry.hwid = hwid
+                    break
+                end
+            end
+
+            local newContent = HttpService:JSONEncode(updatedKeys)
             local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
 
-            local body = {
+            -- Lấy SHA của file trên GitHub
+            local githubData = fetchJson(githubApiUrl)
+            local sha = githubData and githubData.sha or ""
+
+            local body = HttpService:JSONEncode({
                 message = "🔄 Update HWID for key: " .. validKey.code,
                 content = encodedContent,
-                sha = fetchJson(githubApiUrl) and fetchJson(githubApiUrl).sha or ""
-            }
+                sha = sha
+            })
 
             local headers = {
                 ["Authorization"] = "token " .. githubToken,
@@ -64,20 +77,20 @@ if keys then
                     Url = githubApiUrl,
                     Method = "PUT",
                     Headers = headers,
-                    Body = HttpService:JSONEncode(body)
+                    Body = body
                 })
-                print("✅ ")
+                print("✅")
             else
-                print("⚠️")
+                print("⚠️ Executor Not Support")
             end
         end
 
-        print("✅ Run script")
+        print("✅ Key hợp lệ, chạy script...")
         getgenv().Language = "English"
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
     else
-        player:Kick("❌ Invalid Key !")
+        player:Kick("❌ Invalid Key!")
     end
 else
-    player:Kick("❌ Script Error.Plz Wait")
+    player:Kick("❌ Script Down.Plz Wait To Fix")
 end

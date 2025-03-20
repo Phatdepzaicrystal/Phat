@@ -1,11 +1,12 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
+-- Đường dẫn GitHub
 local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
-local hwidListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/hwids.json"
 local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/contents/keys.json"
-local githubToken = "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"
+local githubToken = "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" -- Token GitHub của bạn
 
+-- Lấy thông tin người chơi
 local player = Players.LocalPlayer
 local hwid = player.UserId .. "-" .. game:GetService("RbxAnalyticsService"):GetClientId()
 
@@ -22,12 +23,13 @@ local function fetchJson(url)
     return success and HttpService:JSONDecode(response) or nil
 end
 
+-- Lấy danh sách key từ GitHub
 local keys = fetchJson(keyListUrl)
 
 if keys then
     local validKey = nil
 
-    -- Kiểm tra key trong danh sách
+    -- Kiểm tra key có tồn tại không
     for _, entry in pairs(keys) do
         if entry.code == getgenv().Key then
             validKey = entry
@@ -35,29 +37,24 @@ if keys then
         end
     end
 
-    -- Nếu key hợp lệ, kiểm tra userId và HWID
+    -- Nếu key hợp lệ, kiểm tra HWID
     if validKey then
-        -- Nếu key có userId nhưng không khớp tài khoản, kick
-        if validKey.userId and tostring(validKey.userId) ~= tostring(player.UserId) then
-            player:Kick("❌ Invail Hwid!")
-            return
-        end
-
-        -- Nếu key có HWID nhưng không khớp, kick
+        -- Nếu HWID không khớp -> Kick người chơi
         if validKey.hwid and validKey.hwid ~= hwid then
-            player:Kick("❌ Invail Hwid!")
+            player:Kick("❌ HWID không hợp lệ!")
             return
         end
 
-        --HWID, cập nhật HWID lên GitHub
+        -- Nếu HWID chưa có, cập nhật HWID lên GitHub
         if not validKey.hwid then
             validKey.hwid = hwid
 
+            -- Mã hóa JSON thành base64 để gửi lên GitHub
             local newContent = HttpService:JSONEncode(keys)
             local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
 
             local body = {
-                message = "🔄 Update HWID for key: " .. validKey.code,
+                message = "🔄 Cập nhật HWID cho key: " .. validKey.code,
                 content = encodedContent,
                 sha = fetchJson(githubApiUrl) and fetchJson(githubApiUrl).sha or ""
             }

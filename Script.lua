@@ -6,10 +6,10 @@ local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/content
 local githubToken = "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"
 
 local player = Players.LocalPlayer
-local hwid = gethwid and gethwid() or "Unknown"
+local hwid = gethwid and gethwid() or "Unknown" -- Lấy HWID của thiết bị
 
-if not getgenv().Key then
-    player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")
+if not getgenv().Key or getgenv().Key == "" then
+    player:Kick("⚠️ Where Your Key?")
     return
 end
 
@@ -35,15 +35,9 @@ if keys then
     end
 
     if validKey then
-        -- Nếu key có userId nhưng không khớp tài khoản, kick
-        if validKey.userId and tostring(validKey.userId) ~= tostring(player.UserId) then
-            player:Kick("❌ Invalid User ID!")
-            return
-        end
-
         -- Nếu HWID đã tồn tại nhưng không khớp, kick
         if validKey.hwid and validKey.hwid ~= hwid then
-            player:Kick("❌ Invalid HWID!")
+            player:Kick("❌Sai Hwid(VN)-Invalid Hwid(EN)")
             return
         end
 
@@ -72,18 +66,18 @@ if keys then
                     Headers = headers,
                     Body = HttpService:JSONEncode(body)
                 })
-                print("✅ HWID mới đã được cập nhật trên GitHub:", hwid)
+                print("✅ ")
             else
-                print("⚠️ Executor không hỗ trợ `http.request`, không thể cập nhật HWID!")
+                print("⚠️")
             end
         end
 
-        print("✅ Key hợp lệ, chạy script...")
+        print("✅ Run script")
         getgenv().Language = "English"
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
     else
-        player:Kick("❌ Key không hợp lệ!")
+        player:Kick("❌ Invalid Key !")
     end
 else
-    player:Kick("❌ Không thể tải danh sách key từ GitHub!")
+    player:Kick("❌ Script Error.Plz Wait")
 end

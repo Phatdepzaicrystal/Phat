@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 local githubRepo = "Phatdepzaicrystal/Key" -- Repo GitHub của bạn
 local keysFile = "keys.json" -- File chứa danh sách key
 local hwidsFile = "hwids.json" -- File lưu HWID + Key
-local githubToken = "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" -- Thay bằng token của bạn
+local githubToken = "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" -- Thay bằng token của bạn
 
 -- 🔹 Lấy Device ID (HWID)
 local function getDeviceId()

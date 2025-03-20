@@ -1,12 +1,10 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
--- Đường dẫn GitHub
 local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
 local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/contents/keys.json"
-local githubToken = "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" -- Token GitHub của bạn
+local githubToken = "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"
 
--- Lấy thông tin người chơi
 local player = Players.LocalPlayer
 local hwid = player.UserId .. "-" .. game:GetService("RbxAnalyticsService"):GetClientId()
 
@@ -29,7 +27,7 @@ local keys = fetchJson(keyListUrl)
 if keys then
     local validKey = nil
 
-    -- Kiểm tra key có tồn tại không
+    -- Kiểm tra key trong danh sách
     for _, entry in pairs(keys) do
         if entry.code == getgenv().Key then
             validKey = entry
@@ -37,26 +35,41 @@ if keys then
         end
     end
 
-    -- Nếu key hợp lệ, kiểm tra HWID
+    -- Nếu key hợp lệ, kiểm tra userId và HWID
     if validKey then
-        -- Nếu HWID không khớp -> Kick người chơi
-        if validKey.hwid and validKey.hwid ~= hwid then
-            player:Kick("❌ HWID không hợp lệ!")
+        -- Nếu key có userId nhưng không khớp tài khoản, kick
+        if validKey.userId and tostring(validKey.userId) ~= tostring(player.UserId) then
+            player:Kick("❌ Invalid HWID!")
             return
         end
 
-        -- Nếu HWID chưa có, cập nhật HWID lên GitHub
+        -- Nếu key có HWID nhưng không khớp, kick
+        if validKey.hwid and validKey.hwid ~= hwid then
+            player:Kick("❌ Invalid HWID!")
+            return
+        end
+
+        -- Nếu key chưa có HWID, cập nhật HWID lên GitHub
         if not validKey.hwid then
             validKey.hwid = hwid
 
-            -- Mã hóa JSON thành base64 để gửi lên GitHub
+            -- Lấy SHA của file keys.json
+            local fileInfo = fetchJson(githubApiUrl)
+            local sha = fileInfo and fileInfo.sha or nil
+
+            if not sha then
+                warn("⚠️ Không lấy được SHA của file! Không thể cập nhật HWID!")
+                return
+            end
+
+            -- Cập nhật HWID vào danh sách keys
             local newContent = HttpService:JSONEncode(keys)
-            local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
+            local encodedContent = syn and syn.crypt.base64.encode(newContent) or HttpService:JSONEncode(newContent)
 
             local body = {
                 message = "🔄 Cập nhật HWID cho key: " .. validKey.code,
                 content = encodedContent,
-                sha = fetchJson(githubApiUrl) and fetchJson(githubApiUrl).sha or ""
+                sha = sha
             }
 
             local headers = {
@@ -65,12 +78,17 @@ if keys then
             }
 
             if http and http.request then
-                http.request({
+                local response = http.request({
                     Url = githubApiUrl,
                     Method = "PUT",
                     Headers = headers,
                     Body = HttpService:JSONEncode(body)
                 })
+
+                if response and response.Body then
+                    print("📢 GitHub API Response:", response.Body)
+                end
+
                 print("✅ HWID mới đã được cập nhật trên GitHub:", hwid)
             else
                 print("⚠️ Executor không hỗ trợ `http.request`, không thể cập nhật HWID!")

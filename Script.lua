@@ -1,7 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local http = (syn and syn.request) or (http and http.request) or http_request or request
 
-local GITHUB_TOKEN = "ghp_xxx"  -- Thay bằng token GitHub của bạn
+local GITHUB_TOKEN = "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"  -- Thay bằng token GitHub của bạn
 local REPO = "Phatdepzaicrystal/Key"
 local KEYS_FILE = "keys.json"
 local HWIDS_FILE = "hwids.json"

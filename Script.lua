@@ -7,7 +7,7 @@ local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/content
 local githubToken = "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"
 
 local player = Players.LocalPlayer
-local hwid = player.UserId .. "-" .. game:GetService("RbxAnalyticsService"):GetClientId()
+local hwid = gethwid and gethwid() or "Unknown" 
 
 if not getgenv().Key then
     player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")

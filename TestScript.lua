@@ -11,7 +11,7 @@ end
 local providedKey = getgenv().Key
 
 -- Cấu hình GitHub để kiểm tra Key
-local GITHUB_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
+local GITHUB_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 
 -- API để kiểm tra và thêm HWID
 local API_URL = "https://2cb8592c-0d94-4348-86b2-42d0bc9b841d-00-5tyyjf8nengg.sisko.replit.dev:8080/check_hwid"
@@ -73,8 +73,8 @@ if keyValid then
     print("✅ Key hợp lệ!")
     if checkAndAddHWID() then
         print("🚀 Chạy script chính...")
-        getgenv().Language = "English" 
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+        getgenv().Language = "English"
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/refs/heads/main/TestScript.lua"))()
     end
 else
     warn("❌ Key không hợp lệ!")

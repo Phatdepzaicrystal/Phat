@@ -1,120 +1,127 @@
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- 🔹 Lấy HWID cũ (nếu không có, đặt thành "Unknown")
-local device_id = gethwid and gethwid() or "Unknown"
+-- 🔥 THAY LINK GITHUB CỦA BẠN Ở ĐÂY 🔥
+local GitHub_User = "Phatdepzaicrystal"
+local Repo_Keys = "Key"
+local Repo_HWIDs = "Key"
+local File_Keys = "keys.json"
+local File_HWIDs = "hwids.txt"
+local GitHub_Token = "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"  -- 🔥 THAY TOKEN CỦA BẠN 🔥
 
--- 🔹 Thông tin GitHub (HÃY SỬA LẠI CHO PHÙ HỢP)
-local github_username = "Phatdepzaicrystal"
-local repo_name = "Key"
-local file_path = "hwid_logs.txt"
-local github_token = "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"
+local HWID = gethwid and gethwid() or "Unknown"
 
--- 🔹 Dữ liệu cần ghi
-local hwid_data = "Device ID: " .. device_id .. "\n"
-
--- 🔹 URL API GitHub
-local url = "https://api.github.com/repos/" .. github_username .. "/" .. repo_name .. "/contents/" .. file_path
-
---------------------------------------------------------------------------------
--- 1. HÀM BASE64Encode THỦ CÔNG
---------------------------------------------------------------------------------
-local function base64Encode(input)
-    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-    local s = {}
-    local len = #input
-
-    for i = 1, len, 3 do
-        local c1 = string.byte(input, i)
-        local c2 = string.byte(input, i + 1)
-        local c3 = string.byte(input, i + 2)
-
-        -- Đảm bảo c2, c3 không bị nil
-        local a1, a2, a3, a4
-
-        if not c2 then
-            c2 = 0
-        end
-        if not c3 then
-            c3 = 0
-        end
-
-        -- Chia nhỏ thành 4 block 6-bit
-        a1 = (c1 >> 2) & 0x3F
-        a2 = ((c1 & 0x03) << 4) | (c2 >> 4)
-        a3 = ((c2 & 0x0F) << 2) | (c3 >> 6)
-        a4 = c3 & 0x3F
-
-        s[#s+1] = b:sub(a1+1, a1+1)
-        s[#s+1] = b:sub(a2+1, a2+1)
-
-        if (i + 1) <= len then
-            s[#s+1] = b:sub(a3+1, a3+1)
-        else
-            s[#s+1] = "="
-        end
-
-        if (i + 2) <= len then
-            s[#s+1] = b:sub(a4+1, a4+1)
-        else
-            s[#s+1] = "="
-        end
-    end
-
-    return table.concat(s)
-end
-
---------------------------------------------------------------------------------
--- 2. HÀM LẤY SHA CỦA FILE (NẾU TỒN TẠI)
---------------------------------------------------------------------------------
-local function get_file_sha()
+--------------------------------------------------------------------
+-- 🔹 HÀM LẤY DỮ LIỆU TỪ GITHUB
+--------------------------------------------------------------------
+local function getGitHubData(repo, file)
+    local url = "https://raw.githubusercontent.com/" .. GitHub_User .. "/" .. repo .. "/main/" .. file
     local success, response = pcall(function()
         return HttpService:GetAsync(url, true)
     end)
     if success then
-        local data = HttpService:JSONDecode(response)
-        return data.sha or nil
-    end
-    return nil
-end
-
---------------------------------------------------------------------------------
--- 3. HÀM UPLOAD HWID LÊN GITHUB
---------------------------------------------------------------------------------
-local function upload_hwid()
-    local sha = get_file_sha()
-
-    -- Tạo JSON data cho GitHub
-    local jsonData = {
-        message = "Update HWID log",
-        content = base64Encode(hwid_data),  -- Áp dụng hàm base64Encode
-        sha = sha                           -- Nếu file đã có, cần sha để update
-    }
-
-    -- Header yêu cầu của GitHub
-    local headers = {
-        ["Authorization"] = "token " .. github_token,
-        ["Accept"] = "application/vnd.github.v3+json"
-    }
-
-    -- Gửi request
-    local success, response = pcall(function()
-        return HttpService:PostAsync(
-            url,
-            HttpService:JSONEncode(jsonData),
-            Enum.HttpContentType.ApplicationJson,
-            false,
-            headers
-        )
-    end)
-
-    if success then
-        print("HWID đã được gửi lên GitHub thành công!")
+        return response
     else
-        warn("Gửi HWID thất bại! Kiểm tra lại token, repo, hoặc kết nối mạng.")
+        return nil
     end
 end
 
---------------------------------------------------------------------------------
--- 4. THỰC THI
---------------------------------------------------------------------------------
-upload_hwid()
+--------------------------------------------------------------------
+-- 🔹 YÊU CẦU NGƯỜI DÙNG NHẬP KEY
+--------------------------------------------------------------------
+local function getUserKey()
+    local UserInput = game:GetService("UserInputService")
+    print("🔑 Vui lòng nhập Key:")
+    local input = UserInput.InputBegan:Wait()
+    return input.KeyCode.Name  -- (Hoặc có thể dùng GUI nhập)
+end
+
+--------------------------------------------------------------------
+-- 🔹 KIỂM TRA KEY
+--------------------------------------------------------------------
+local function checkKey(userKey)
+    local keyData = getGitHubData(Repo_Keys, File_Keys)
+    if keyData then
+        local keys = HttpService:JSONDecode(keyData)
+        for _, validKey in pairs(keys) do
+            if userKey == validKey then
+                print("✅ Key hợp lệ!")
+                return true
+            end
+        end
+    end
+    print("❌ Key không hợp lệ! Kick người chơi.")
+    LocalPlayer:Kick("⚠️ Sai Key! Vui lòng kiểm tra lại.")
+    return false
+end
+
+--------------------------------------------------------------------
+-- 🔹 KIỂM TRA & THÊM HWID LÊN GITHUB
+--------------------------------------------------------------------
+local function checkHWID()
+    local hwidData = getGitHubData(Repo_HWIDs, File_HWIDs)
+
+    if hwidData and string.find(hwidData, HWID) then
+        print("✅ HWID hợp lệ, tiếp tục chạy script.")
+        return true
+    else
+        print("🔄 HWID chưa có, đang gửi lên GitHub...")
+
+        -- Gửi HWID lên GitHub
+        local url = "https://api.github.com/repos/" .. GitHub_User .. "/" .. Repo_HWIDs .. "/contents/" .. File_HWIDs
+        local sha = nil
+
+        -- Lấy SHA nếu file đã tồn tại (để ghi đè)
+        local success, response = pcall(function()
+            return HttpService:GetAsync(url, true)
+        end)
+        if success then
+            local data = HttpService:JSONDecode(response)
+            sha = data.sha
+        end
+
+        -- Dữ liệu cần gửi
+        local newContent = hwidData and (hwidData .. "\n" .. HWID) or HWID
+        local jsonData = {
+            message = "Thêm HWID mới",
+            content = HttpService:Base64Encode(newContent),
+            sha = sha
+        }
+
+        local headers = {
+            ["Authorization"] = "token " .. GitHub_Token,
+            ["Accept"] = "application/vnd.github.v3+json"
+        }
+
+        local successUpload, _ = pcall(function()
+            return HttpService:PostAsync(
+                url,
+                HttpService:JSONEncode(jsonData),
+                Enum.HttpContentType.ApplicationJson,
+                false,
+                headers
+            )
+        end)
+
+        if successUpload then
+            print("✅ HWID đã được gửi lên GitHub thành công!")
+            return true
+        else
+            print("❌ Gửi HWID thất bại! Kiểm tra lại token hoặc kết nối mạng.")
+            return false
+        end
+    end
+end
+
+--------------------------------------------------------------------
+-- 🔹 THỰC THI SCRIPT
+--------------------------------------------------------------------
+local userKey = getUserKey()
+if checkKey(userKey) then
+    if checkHWID() then
+        print("✅ Chạy script chính!")
+        getgenv().Language = "English"
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+    end
+end

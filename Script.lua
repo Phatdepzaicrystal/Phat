@@ -89,7 +89,7 @@ else
         local success, result = pcall(function() return http.request(requestData) end)
         if success then
             print("✅ HWID đã được cập nhật:", hwid)
-            player:Kick("⚠️ HWID của bạn đã được liên kết, vui lòng chạy lại script.")
+            print("⚠️ HWID của bạn đã được liên kết, đang chạy script...")
             return
         else
             player:Kick("❌ Lỗi cập nhật HWID!")

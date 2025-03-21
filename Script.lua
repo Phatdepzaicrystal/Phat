@@ -11,13 +11,13 @@ local githubToken = "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" -- Thay bằng to
 -- Tạo HWID bằng cách kết hợp UserId và ClientId (để đảm bảo duy nhất)
 local hwid = gethwid and gethwid() or "Unknown"
 
--- Kiểm tra key có được nhập vào getgenv().Key không
+-- Kiểm tra xem key đã được nhập vào getgenv().Key chưa
 if not getgenv().Key then
     player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")
     return
 end
 
--- Hàm lấy dữ liệu JSON từ một URL
+-- Hàm lấy dữ liệu JSON từ URL
 local function fetchJson(url)
     local success, response = pcall(function()
         return game:HttpGet(url)
@@ -37,10 +37,10 @@ if not keysData then
     return
 end
 
--- Tìm entry có trường "key" trùng với getgenv().Key
+-- Tìm entry có trường "code" trùng với getgenv().Key
 local entry = nil
 for _, v in ipairs(keysData) do
-    if v["key"] == getgenv().Key then
+    if v["code"] == getgenv().Key then
         entry = v
         break
     end
@@ -51,18 +51,18 @@ if not entry then
     return
 end
 
--- Kiểm tra HWID: nếu đã có và không khớp thì kick
+-- Nếu entry có hwid và không khớp với HWID hiện tại → Kick
 if entry.hwid then
     if entry.hwid ~= hwid then
         player:Kick("❌ HWID không khớp!")
         return
     end
 else
-    -- Nếu chưa có HWID, cập nhật entry với HWID hiện tại
+    -- Nếu chưa có hwid, tự động cập nhật entry với HWID hiện tại
     entry.hwid = hwid
 
     local newContent = HttpService:JSONEncode(keysData)
-    -- GitHub API yêu cầu nội dung ở dạng Base64. Nếu Executor hỗ trợ Synapse, dùng hàm mã hóa Base64 của Synapse; nếu không, bạn cần có hàm mã hóa Base64 riêng.
+    -- GitHub API yêu cầu nội dung ở dạng Base64. Nếu dùng Synapse thì dùng hàm mã hóa của nó, nếu không thì bạn cần tích hợp hàm mã hóa Base64 riêng.
     local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
 
     -- Lấy SHA hiện tại của file keys.json từ GitHub API
@@ -70,7 +70,7 @@ else
     local currentSHA = apiData and apiData.sha or ""
 
     local body = {
-        message = "🔄 Update HWID cho key: " .. entry["key"],
+        message = "🔄 Update HWID cho key: " .. entry["code"],
         content = encodedContent,
         sha = currentSHA
     }
@@ -101,7 +101,7 @@ else
     end
 end
 
--- Nếu key và HWID hợp lệ, chạy script VxezeHub
+-- Nếu key và HWID hợp lệ, chạy VxezeHub
 print("✅ Key và HWID hợp lệ! Đang chạy script...")
 getgenv().Language = "English"
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()

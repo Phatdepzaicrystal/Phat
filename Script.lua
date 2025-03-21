@@ -2,22 +2,22 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Đường dẫn file keys.json qua raw URL (GET)
+-- URL file keys.json (lấy qua raw URL)
 local keysUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
--- Đường dẫn GitHub API để update file keys.json
+-- URL GitHub API dùng để update file keys.json
 local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/contents/keys.json"
-local githubToken = "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" -- Thay bằng token của bạn
+local githubToken = "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" -- Thay bằng token của bạn
 
--- Tạo HWID bằng cách kết hợp UserId và ClientId (để đảm bảo duy nhất)
-local hwid = gethwid and gethwid() or "Unknown"
+-- Tạo HWID (ví dụ: kết hợp UserId và ClientId)
+local hwid = player.UserId .. "-" .. game:GetService("RbxAnalyticsService"):GetClientId()
 
--- Kiểm tra xem key đã được nhập vào getgenv().Key chưa
+-- Kiểm tra xem key đã được nhập hay chưa
 if not getgenv().Key then
     player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")
     return
 end
 
--- Hàm lấy dữ liệu JSON từ URL
+-- Hàm tải JSON từ một URL
 local function fetchJson(url)
     local success, response = pcall(function()
         return game:HttpGet(url)
@@ -51,18 +51,18 @@ if not entry then
     return
 end
 
--- Nếu entry có hwid và không khớp với HWID hiện tại → Kick
+-- Nếu entry đã có "hwid" và không khớp với HWID hiện tại → Kick
 if entry.hwid then
     if entry.hwid ~= hwid then
         player:Kick("❌ HWID không khớp!")
         return
     end
 else
-    -- Nếu chưa có hwid, tự động cập nhật entry với HWID hiện tại
+    -- Nếu chưa có "hwid", cập nhật entry với HWID hiện tại và update file lên GitHub
     entry.hwid = hwid
 
     local newContent = HttpService:JSONEncode(keysData)
-    -- GitHub API yêu cầu nội dung ở dạng Base64. Nếu dùng Synapse thì dùng hàm mã hóa của nó, nếu không thì bạn cần tích hợp hàm mã hóa Base64 riêng.
+    -- GitHub API yêu cầu nội dung được mã hóa Base64; nếu dùng Synapse, sử dụng hàm mã hóa của Synapse
     local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
 
     -- Lấy SHA hiện tại của file keys.json từ GitHub API
@@ -101,7 +101,7 @@ else
     end
 end
 
--- Nếu key và HWID hợp lệ, chạy VxezeHub
+-- Nếu key và HWID hợp lệ, chạy script VxezeHub
 print("✅ Key và HWID hợp lệ! Đang chạy script...")
 getgenv().Language = "English"
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()

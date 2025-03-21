@@ -11,11 +11,13 @@ end
 local providedKey = getgenv().Key
 
 -- GitHub configuration
-local GITHUB_TOKEN = "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"  
+local GITHUB_TOKEN = "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" 
 local REPO_OWNER = "Phatdepzaicrystal"
 local REPO_NAME = "Key"
 local FILE_PATH = "keys.json"
-local RAW_URL = "https://raw.githubusercontent.com/" .. REPO_OWNER .. "/" .. REPO_NAME .. "/refs/heads/main/" .. FILE_PATH
+
+-- ✅ Use the correct raw link (no refs/heads/main)
+local RAW_URL = "https://raw.githubusercontent.com/" .. REPO_OWNER .. "/" .. REPO_NAME .. "/main/" .. FILE_PATH
 local API_URL = "https://api.github.com/repos/" .. REPO_OWNER .. "/" .. REPO_NAME .. "/contents/" .. FILE_PATH
 
 -- Function to get keys.json from GitHub
@@ -47,8 +49,10 @@ end
 -- Function to update keys.json on GitHub with new content
 local function updateKeysOnGitHub(updatedKeys, sha)
     local jsonContent = HttpService:JSONEncode(updatedKeys)
-    -- Use base64 encoding function; if using Synapse X, syn.crypt.base64.encode is available.
-    local base64Content = (syn and syn.crypt.base64.encode or HttpService.Base64Encode)(jsonContent)
+    local base64Content = (syn and syn.crypt and syn.crypt.base64 and syn.crypt.base64.encode)
+        and syn.crypt.base64.encode(jsonContent)
+        or HttpService:Base64Encode(jsonContent)
+
     local payload = {
          message = "🔐 Update keys.json: add HWID",
          content = base64Content,
@@ -86,21 +90,21 @@ local function checkAndAddHWID(providedKey)
 
     if not keyFound then
          print("❌ The provided key is invalid!")
-         player:Kick("Invalid Key!")
+         player:Kick("Invalid key!")
          return false
     end
 
     if keyFound.hwid then
          if keyFound.hwid == device_id then
-              print("✅")
+              print("✅ Key is valid and HWID matches!")
               return true
          else
               print("❌ HWID mismatch! Stored HWID: " .. keyFound.hwid .. ", your device HWID: " .. device_id)
-              player:Kick("HWID Invalid !")
+              player:Kick("HWID mismatch!")
               return false
          end
     else
-
+         -- If HWID is not set, add the current device HWID and update GitHub
          keyFound.hwid = device_id
          print("✅ HWID not set; adding your device HWID to key: " .. providedKey)
          local sha = getSHA()
@@ -111,10 +115,10 @@ end
 
 -- Check the key and HWID conditions
 if checkAndAddHWID(providedKey) then
-    print("✅ Wellcome ")
+    print("✅ Conditions met! Running main script...")
     getgenv().Language = "English"
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2"))()
 else
-    print("❌")
-    game.Players.LocalPlayer:Kick("Biến")
+    print("❌ Key or HWID is invalid. Script will not run.")
+    player:Kick("Invalid key or HWID!")
 end

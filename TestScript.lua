@@ -1,19 +1,27 @@
 local HttpService = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
 
+-- 🔗 API URL (Check & Thêm HWID)
 local API_URL = "https://2cb8592c-0d94-4348-86b2-42d0bc9b841d-00-5tyyjf8nengg.sisko.replit.dev:8080"
 
+-- 🔗 GitHub URL (Danh sách Key)
 local GITHUB_URL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
 
+-- 📌 Lấy HWID của thiết bị
 local function getHWID()
-    return gethwid and gethwid() or "Unknown"
+    return  gethwid and gethwid() or "Unknown"
 end
 
 -- 📌 Gửi Request tới API (Check hoặc Thêm HWID)
-local function sendAPIRequest(endpoint, data)
+local function sendAPIRequest(endpoint, data, method)
     local jsonData = HttpService:JSONEncode(data)
     local success, response = pcall(function()
-        return HttpService:PostAsync(API_URL .. endpoint, jsonData, Enum.HttpContentType.ApplicationJson)
+        return HttpService:RequestAsync({
+            Url = API_URL .. endpoint,
+            Method = method,
+            Headers = {["Content-Type"] = "application/json"},
+            Body = jsonData
+        })
     end)
     return success and response or nil
 end
@@ -30,29 +38,21 @@ local function getKeysFromGitHub()
     end
 end
 
--- 📌 Kiểm tra Key và HWID trên GitHub
+-- 📌 Kiểm tra Key trên GitHub
 local function checkKey(providedKey)
     local keysData = getKeysFromGitHub()
     if not keysData then
-        player:Kick("❌ Không thể lấy danh sách key từ GitHub!")
+        warn("❌ Không thể lấy danh sách key từ GitHub!")
         return false
     end
 
     for _, entry in ipairs(keysData) do
         if entry.code == providedKey then
-            if entry.hwid == "" or entry.hwid == getHWID() then
-                print("✅ Key hợp lệ!")
-                return true
-            else
-                print("❌ HWID không trùng khớp!")
-                player:Kick("⚠️ HWID không trùng với key!")
-                return false
-            end
+            return true
         end
     end
 
-    print("❌ Key không hợp lệ!")
-    player:Kick("⚠️ Key không hợp lệ!")
+    warn("❌ Key không hợp lệ!")
     return false
 end
 
@@ -61,14 +61,13 @@ local function checkHWID()
     local hwid = getHWID()
     local data = { hwid = hwid }
     
-    local response = sendAPIRequest("/check_hwid", data)
+    local response = sendAPIRequest("/check_hwid", data, "POST")
     if response then
-        local result = HttpService:JSONDecode(response)
+        local result = HttpService:JSONDecode(response.Body)
         if result.status == "valid" then
             print("✅ HWID hợp lệ!")
             return true
         else
-            print("❌ HWID không hợp lệ!")
             return false
         end
     else
@@ -77,14 +76,14 @@ local function checkHWID()
     end
 end
 
--- 📌 Thêm HWID vào API nếu chưa có
+-- 📌 Tự động thêm HWID vào API nếu chưa có
 local function addHWID()
     local hwid = getHWID()
     local data = { hwid = hwid }
     
-    local response = sendAPIRequest("/add_hwid", data)
+    local response = sendAPIRequest("/add_hwid", data, "POST")
     if response then
-        local result = HttpService:JSONDecode(response)
+        local result = HttpService:JSONDecode(response.Body)
         print("✅ HWID đã được thêm: " .. result.message)
     else
         warn("❌ Lỗi khi thêm HWID!")
@@ -93,17 +92,22 @@ end
 
 -- 📌 Lấy Key người dùng nhập vào
 if not getgenv().Key or getgenv().Key == "" then
-    player:Kick("⚠️ Bạn phải nhập key!")
+    warn("⚠️ Bạn phải nhập key!")
     return
 end
 local providedKey = getgenv().Key
 
 -- 📌 Kiểm tra Key & HWID trước khi chạy script
-if checkKey(providedKey) and checkHWID() then
-    print("✅ Key & HWID hợp lệ! Chạy script...")
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2"))()
+if checkKey(providedKey) then
+    if checkHWID() then
+        print("✅ Key & HWID hợp lệ! Chạy script...")
+    else
+        print("⚠️ HWID chưa có! Đang thêm vào API...")
+        addHWID()
+    end
+
+    getgenv().Language = "English"
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
 else
-    print("⚠️ Không hợp lệ! Thêm HWID vào API...")
-    addHWID()
-    player:Kick("⚠️ HWID chưa được đăng ký. Hãy thử lại!")
+    warn("❌ Key không hợp lệ, script sẽ không chạy.")
 end

@@ -1,91 +1,135 @@
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
+local device_id = gethwid and gethwid() or "Unknown"
 
-local keyListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
-local hwidListUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/hwids.json"
-local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/contents/keys.json"
-local githubToken = "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"
+-- Cấu hình GitHub
+local GITHUB_TOKEN = "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"  -- Thay bằng token của bạn
+local REPO_OWNER = "Phatdepzaicrystal"
+local REPO_NAME = "Key"
+local FILE_PATH = "keys.json"
+local RAW_URL = "https://raw.githubusercontent.com/" .. REPO_OWNER .. "/" .. REPO_NAME .. "/refs/heads/main/" .. FILE_PATH
+local API_URL = "https://api.github.com/repos/" .. REPO_OWNER .. "/" .. REPO_NAME .. "/contents/" .. FILE_PATH
 
-local player = Players.LocalPlayer
-local hwid = gethwid and gethwid() or "Unknown" 
+-- Hàm tải keys.json từ GitHub
+local function getKeys()
+    local success, response = pcall(function()
+        return HttpService:GetAsync(RAW_URL)
+    end)
+    if success then
+        return HttpService:JSONDecode(response)
+    else
+        error("Lỗi tải keys.json từ GitHub!")
+    end
+end
 
-if not getgenv().Key then
-    player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")
+-- Hàm lấy SHA của file keys.json (cần cho việc update file)
+local function getSHA()
+    local headers = { ["Authorization"] = "token " .. GITHUB_TOKEN }
+    local success, response = pcall(function()
+        return HttpService:GetAsync(API_URL, true)
+    end)
+    if success then
+        local data = HttpService:JSONDecode(response)
+        return data.sha
+    else
+        return nil
+    end
+end
+
+-- Hàm cập nhật keys.json trên GitHub với nội dung mới
+local function updateKeysOnGitHub(updatedKeys, sha)
+    local jsonContent = HttpService:JSONEncode(updatedKeys)
+    -- Sử dụng hàm Base64 của Synapse X nếu có, nếu không bạn cần thay thế
+    local base64Content = (syn and syn.crypt.base64.encode or HttpService.Base64Encode)(jsonContent)
+    local payload = {
+         message = "🔐 Update keys.json: thêm HWID",
+         content = base64Content,
+         sha = sha or nil
+    }
+    local headers = {
+         ["Authorization"] = "token " .. GITHUB_TOKEN,
+         ["Content-Type"] = "application/json"
+    }
+    local success, result = pcall(function()
+         return HttpService:RequestAsync{
+             Url = API_URL,
+             Method = "PUT",
+             Headers = headers,
+             Body = HttpService:JSONEncode(payload)
+         }
+    end)
+    if success then
+         print("✅ Update keys.json thành công!")
+    else
+         warn("❌ Update keys.json thất bại:", result)
+    end
+end
+
+-- Hàm tự động chọn key hợp lệ
+local function autoSelectKey(keysTable)
+    -- Ở đây, ta chọn key đầu tiên có userId khác nil (tức đã được gán) hoặc key đầu tiên nếu chưa được gán
+    for _, entry in ipairs(keysTable) do
+         if entry.userId then
+              return entry.code, true  -- true: đã có HWID
+         end
+    end
+    -- Nếu không tìm thấy key nào có userId, chọn key đầu tiên (có thể là key trống)
+    if #keysTable > 0 then
+         return keysTable[1].code, false
+    end
+    return nil, false
+end
+
+-- Hàm kiểm tra và cập nhật HWID cho key nếu chưa có
+local function checkAndAddHWID(user_key)
+    local keysTable = getKeys()
+    local keyFound = false
+    local hwidPresent = false
+    for i, entry in ipairs(keysTable) do
+         if entry.code == user_key then
+              keyFound = true
+              if not entry.hwid then
+                   entry.hwid = device_id
+                   hwidPresent = false
+                   print("✅ HWID được thêm vào key:", user_key)
+              else
+                   hwidPresent = (entry.hwid == device_id)
+                   if not hwidPresent then
+                        print("❌ HWID không khớp! Đã lưu HWID:", entry.hwid, "mà máy của bạn là:", device_id)
+              end
+              break
+         end
+    end
+    if not keyFound then
+         print("❌ Key không tồn tại trong hệ thống!")
+         return false
+    end
+    -- Cập nhật file trên GitHub nếu HWID chưa có (hoặc không khớp, bạn có thể quyết định không update nếu không khớp)
+    if not hwidPresent then
+         local sha = getSHA()
+         updateKeysOnGitHub(keysTable, sha)
+         -- Sau khi update, nếu HWID không khớp thì dừng
+         if not hwidPresent then
+              return false
+         end
+    end
+    return hwidPresent
+end
+
+-- Tự động chọn key (theo logic bạn mong muốn)
+local user_key, alreadyHasHWID = autoSelectKey(getKeys())
+if not user_key then
+    print("❌ Không tìm thấy key hợp lệ!")
     return
 end
 
--- Hàm tải JSON từ GitHub
-local function fetchJson(url)
-    local success, response = pcall(function()
-        return game:HttpGet(url)
-    end)
-    return success and HttpService:JSONDecode(response) or nil
-end
+-- Kiểm tra và cập nhật HWID nếu cần
+local valid = checkAndAddHWID(user_key)
 
-local keys = fetchJson(keyListUrl)
-
-if keys then
-    local validKey = nil
-
-    -- Kiểm tra key trong danh sách
-    for _, entry in pairs(keys) do
-        if entry.code == getgenv().Key then
-            validKey = entry
-            break
-        end
-    end
-
-    -- Nếu key hợp lệ, kiểm tra userId và HWID
-    if validKey then
-        -- Nếu key có userId nhưng không khớp tài khoản, kick
-        if validKey.userId and tostring(validKey.userId) ~= tostring(player.UserId) then
-            player:Kick("❌ Invail Hwid!")
-            return
-        end
-
-        -- Nếu key có HWID nhưng không khớp, kick
-        if validKey.hwid and validKey.hwid ~= hwid then
-            player:Kick("❌ Invail Hwid!")
-            return
-        end
-
-        --HWID, cập nhật HWID lên GitHub
-        if not validKey.hwid then
-            validKey.hwid = hwid
-
-            local newContent = HttpService:JSONEncode(keys)
-            local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
-
-            local body = {
-                message = "🔄 Update HWID for key: " .. validKey.code,
-                content = encodedContent,
-                sha = fetchJson(githubApiUrl) and fetchJson(githubApiUrl).sha or ""
-            }
-
-            local headers = {
-                ["Authorization"] = "token " .. githubToken,
-                ["Content-Type"] = "application/json"
-            }
-
-            if http and http.request then
-                http.request({
-                    Url = githubApiUrl,
-                    Method = "PUT",
-                    Headers = headers,
-                    Body = HttpService:JSONEncode(body)
-                })
-                print("✅ HWID mới đã được cập nhật trên GitHub:", hwid)
-            else
-                print("⚠️ Executor không hỗ trợ `http.request`, không thể cập nhật HWID!")
-            end
-        end
-
-        print("✅ Key hợp lệ, chạy script...")
-        getgenv().Language = "English"
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
-    else
-        player:Kick("❌ Key không hợp lệ!")
-    end
+if valid then
+    print("✅ Điều kiện key & HWID thoả mãn!")
+    getgenv().Language = "English"
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
 else
-    player:Kick("❌ Không thể tải danh sách key từ GitHub!")
+    print("❌ Key hoặc HWID không hợp lệ, không chạy script.")
+    game.Players.LocalPlayer:Kick("Key hoặc HWID không hợp lệ!")
 end

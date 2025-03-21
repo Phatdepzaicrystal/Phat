@@ -2,7 +2,7 @@ local HttpService = game:GetService("HttpService")
 local device_id = gethwid and gethwid() or "Unknown"
 
 -- Cấu hình GitHub
-local GITHUB_TOKEN = "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"  -- Thay bằng token của bạn
+local GITHUB_TOKEN = "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"  -- Thay bằng token của bạn
 local REPO_OWNER = "Phatdepzaicrystal"
 local REPO_NAME = "Key"
 local FILE_PATH = "keys.json"

@@ -4,10 +4,10 @@ local HttpService = game:GetService("HttpService")
 local device_id = gethwid and gethwid() or "Unknown"
 
 -- 🔹 Thông tin GitHub (HÃY SỬA LẠI CHO PHÙ HỢP)
-local github_username = "your-username"
-local repo_name       = "your-repo"
-local file_path       = "hwid_logs.txt"
-local github_token    = "your-github-token"
+local github_username = "Phatdepzaicrystal"
+local repo_name = "Key"
+local file_path = "hwid_logs.txt"
+local github_token = "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"
 
 -- 🔹 Dữ liệu cần ghi
 local hwid_data = "Device ID: " .. device_id .. "\n"

@@ -9,7 +9,7 @@ local githubApiUrl = "https://api.github.com/repos/Phatdepzaicrystal/Key/content
 local githubToken = "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" -- Thay bằng token của bạn
 
 -- Tạo HWID bằng cách kết hợp UserId và ClientId (để đảm bảo duy nhất)
-local hwid = player.UserId .. "-" .. game:GetService("RbxAnalyticsService"):GetClientId()
+local hwid = gethwid and gethwid() or "Unknown"
 
 -- Kiểm tra key có được nhập vào getgenv().Key không
 if not getgenv().Key then

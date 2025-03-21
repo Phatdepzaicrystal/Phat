@@ -9,29 +9,31 @@ local github_token = "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"
 
 -- Nội dung cần gửi
 local hwid_data = "Device ID: " .. device_id .. "\n"
-
--- API để gửi HWID lên GitHub
+-- 🔹 URL API GitHub
 local url = "https://api.github.com/repos/" .. github_username .. "/" .. repo_name .. "/contents/" .. file_path
 
--- Lấy thông tin file hiện tại (nếu có)
-local function get_file_sha()
+-- 🔹 Hàm kiểm tra file có tồn tại không
+local function get_file_info()
     local success, response = pcall(function()
         return http:GetAsync(url, true)
     end)
+
     if success then
         local data = http:JSONDecode(response)
-        return data.sha or nil
+        return data.sha or nil -- Trả về SHA của file nếu tồn tại
+    else
+        return nil -- File chưa tồn tại
     end
-    return nil
 end
 
--- Hàm gửi HWID lên GitHub
+-- 🔹 Hàm tải HWID lên GitHub
 local function upload_hwid()
-    local sha = get_file_sha()
+    local file_sha = get_file_info() -- Lấy SHA của file (nếu có)
+
     local jsonData = {
         message = "Update HWID log",
-        content = http:Base64Encode(hwid_data),
-        sha = sha
+        content = http:Base64Encode(hwid_data), -- Mã hóa nội dung file
+        sha = file_sha -- Nếu file tồn tại, thêm SHA để update
     }
 
     local headers = {
@@ -44,11 +46,11 @@ local function upload_hwid()
     end)
 
     if success then
-        print("HWID đã được gửi lên GitHub thành công!")
+        print("✅ HWID đã được gửi lên GitHub thành công!")
     else
-        warn("Gửi HWID thất bại!")
+        warn("❌ Gửi HWID thất bại! Kiểm tra lại token và quyền repo.")
     end
 end
 
--- Gửi HWID
+-- 🔹 Gửi HWID lên GitHub
 upload_hwid()

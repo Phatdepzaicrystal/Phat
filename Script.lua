@@ -1,18 +1,16 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
--- 🔹 GitHub thông tin
-local githubRepo = "Phatdepzaicrystal/Key" -- Repo GitHub của bạn
-local keysFile = "keys.json" -- File chứa danh sách key
-local hwidsFile = "hwids.json" -- File lưu HWID + Key
-local githubToken = "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" -- Thay bằng token của bạn
+local githubRepo = "Phatdepzaicrystal/Key" 
+local keysFile = "keys.json" 
+local hwidsFile = "hwids.json" 
+local githubToken = "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" 
 
--- 🔹 Lấy Device ID (HWID)
 local function getDeviceId()
     if gethwid then
-        return gethwid() -- Một số executor hỗ trợ gethwid()
+        return gethwid() 
     elseif gethwid and gethwid()  then
-        return gethwid and gethwid() -- Cách tạm thời
+        return gethwid and gethwid() 
     else
         return "Unknown"
     end

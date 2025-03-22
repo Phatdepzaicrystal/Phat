@@ -1,5 +1,5 @@
-local http = game:GetService("HttpService")
-local hwid = gethwid and gethwid() or "Unknown"
+local HttpService = game:GetService("HttpService")
+local HWID = gethwid and gethwid() or "Unknown"
 local player = game.Players.LocalPlayer
 
 if not getgenv().Key or getgenv().Key == "" then
@@ -7,54 +7,95 @@ if not getgenv().Key or getgenv().Key == "" then
     return
 end
 
-local githubRawURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
+-- 🔹 Cấu hình GitHub
+local github_username = "Phatdepzaicrystal"
+local repo_name = "Key"
+local file_path = "keys.json"
 
--- 🔗 Link webhook Discord để gửi HWID
-local webhookURL = "https://discord.com/api/webhooks/1351710851727364158/CLgOTMvfjEshI-HXkzCi0SK_kYZzx9qi42aZfI92R_YrYBwr3U7H9Se1dIRrMcxxrtPj" 
--- Lấy danh sách Key từ GitHub
-local success, response = pcall(function()
-    return http:GetAsync(githubRawURL)
-end)
+-- 🔹 Cấu hình Webhook Discord
+local DiscordWebhook = "https://discord.com/api/webhooks/1351710851727364158/CLgOTMvfjEshI-HXkzCi0SK_kYZzx9qi42aZfI92R_YrYBwr3U7H9Se1dIRrMcxxrtPj"
 
-if success then
-    local data = http:JSONDecode(response) -- Giải mã JSON từ GitHub
-    local isValid = false
-    local validKey = nil
+-- 🔹 Link API GitHub để lấy danh sách Key
+local github_api_url = "https://raw.githubusercontent.com/" .. github_username .. "/" .. repo_name .. "/main/" .. file_path
 
-    -- 🔎 Kiểm tra xem HWID có khớp với bất kỳ Key nào trong danh sách không
-    for key, hwidList in pairs(data) do
-        for _, storedHWID in ipairs(hwidList) do
-            if storedHWID == hwid then
-                isValid = true
-                validKey = key
-                break
-            end
-        end
-        if isValid then break end
+-- 🔹 Link script cần chạy nếu key đúng
+local script_url = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"
+
+-- 🔹 Lấy danh sách Key từ GitHub
+local function getKeysFromGitHub()
+    local request = syn and syn.request or http_request or request
+    if not request then
+        print("❌ Không hỗ trợ request HTTP!")
+        return nil
     end
 
-    -- ✅ Nếu tìm thấy HWID hợp lệ
-    if isValid then
-        print("✅ HWID và Key hợp lệ! Gửi lên Discord...")
+    local response = request({
+        Url = github_api_url,
+        Method = "GET"
+    })
 
-        -- 🎨 Format tin nhắn
-        local message = "**🔹 HWID ĐƯỢC XÁC NHẬN 🔹**\n"
-        message = message .. "```\n"
-        message = message .. "Người chơi: " .. player.Name .. "\n"
-        message = message .. "HWID      : " .. hwid .. "\n"
-        message = message .. "Key       : " .. validKey .. "\n"
-        message = message .. "```\n"
-        message = message .. "✅ Truy cập thành công!"
-
-        -- 📩 Gửi HWID + Key lên Discord
-        local payload = { content = message }
-        http:PostAsync(webhookURL, http:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
-
-        print("📩 Đã gửi HWID lên Discord!")
+    if response.StatusCode == 200 then
+        return HttpService:JSONDecode(response.Body)
     else
-        print("❌ HWID hoặc Key không hợp lệ!")
-        player:Kick("❌ HWID hoặc Key không hợp lệ! Vui lòng kiểm tra lại.")
+        print("❌ Không thể lấy dữ liệu từ GitHub! Mã lỗi:", response.StatusCode)
+        return nil
+    end
+end
+
+-- 🔹 Kiểm tra HWID có trong danh sách không
+local function checkHWID(keys)
+    for _, entry in ipairs(keys) do
+        if entry.hwid == HWID then
+            print("✅ HWID hợp lệ! Chạy script...")
+            return entry.key -- Trả về Key nếu HWID hợp lệ
+        end
+    end
+    return nil
+end
+
+-- 🔹 Gửi HWID & Key lên Webhook Discord
+local function sendHWIDToDiscord(UserKey)
+    local data = {
+        content = "**:key: Yêu cầu Redeem Key**\n",
+        embeds = {{
+            title = "Thông tin người dùng",
+            fields = {
+                { name = ":small_blue_diamond: HWID", value = HWID, inline = true },
+                { name = ":id: User ID", value = tostring(game.Players.LocalPlayer.UserId), inline = true },
+                { name = ":bust_in_silhouette: Username", value = game.Players.LocalPlayer.Name, inline = true },
+                { name = ":key: Key sử dụng", value = UserKey, inline = true }
+            },
+            color = 16711680
+        }}
+    }
+
+    local request = syn and syn.request or http_request or request
+    if request then
+        request({
+            Url = DiscordWebhook,
+            Method = "POST",
+            Headers = { ["Content-Type"] = "application/json" },
+            Body = HttpService:JSONEncode(data)
+        })
+    end
+end
+
+-- 🔹 Chạy script nếu Key đúng
+local function runScript()
+    getgenv().Language = "English"
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+end
+
+-- 🔹 Kiểm tra tất cả HWID, nếu trùng thì gửi Webhook + chạy script
+local keys_data = getKeysFromGitHub()
+if keys_data then
+    local validKey = checkHWID(keys_data.keys)
+    if validKey then
+        sendHWIDToDiscord(validKey)
+        runScript()
+    else
+        print("❌ HWID không hợp lệ!")
     end
 else
-    print("❌ Lỗi tải dữ liệu từ GitHub!")
+    print("❌ Không thể tải danh sách Key!")
 end

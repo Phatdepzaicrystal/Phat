@@ -7,7 +7,7 @@ if not getgenv().Key or getgenv().Key == "" then
     return
 end
 
-local githubRawURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local githubRawURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json"
 
 -- 🔗 Link webhook Discord để gửi HWID
 local webhookURL = "https://discord.com/api/webhooks/1351710851727364158/CLgOTMvfjEshI-HXkzCi0SK_kYZzx9qi42aZfI92R_YrYBwr3U7H9Se1dIRrMcxxrtPj" 

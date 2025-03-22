@@ -1,102 +1,47 @@
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
+local device_id = gethwid and gethwid() or "Unknown"
+local key = getgenv().Key
 
-local githubRepo = "Phatdepzaicrystal/Key" 
-local keysFile = "keys.json" 
-local hwidsFile = "hwids.json" 
-local githubToken = "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" 
-
-local function getDeviceId()
-    if gethwid then
-        return gethwid() 
-    elseif gethwid and gethwid()  then
-        return gethwid and gethwid() 
-    else
-        return "Unknown"
-    end
-end
-
-local player = Players.LocalPlayer
-local hwid = getDeviceId()
-
-if not getgenv().Key then
-    player:Kick("⚠️ Vui lòng nhập key trước khi chạy script.")
+if not key or key == "" then
+    game.Players.LocalPlayer:Kick("Bạn chưa nhập key!")
     return
 end
 
--- 🔹 Hàm tải JSON từ GitHub
-local function fetchJson(url)
-    local success, response = pcall(function()
-        return game:HttpGet(url)
-    end)
-    return success and HttpService:JSONDecode(response) or nil
+local http = game:HttpGet("https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json")
+local success, data = pcall(game.HttpService.JSONDecode, game.HttpService, http)
+
+if not success or not data then
+    game.Players.LocalPlayer:Kick("Không thể tải dữ liệu key!")
+    return
 end
 
--- 🔹 URL file keys & hwids
-local keysUrl = "https://raw.githubusercontent.com/" .. githubRepo .. "/main/" .. keysFile
-local hwidsUrl = "https://raw.githubusercontent.com/" .. githubRepo .. "/main/" .. hwidsFile
-
-local keys = fetchJson(keysUrl)
-local hwids = fetchJson(hwidsUrl) or {}
-
-if keys then
-    local validKey = nil
-
-    -- Kiểm tra key trong danh sách
-    for _, entry in pairs(keys) do
-        if entry.code == getgenv().Key then
-            validKey = entry
-            break
+local function findKey(k)
+    for _, entry in ipairs(data) do
+        if entry.code == k then
+            return entry
         end
     end
+    return nil
+end
 
-    if validKey then
-        -- Kiểm tra nếu HWID đã tồn tại nhưng không khớp -> Kick
-        for _, entry in pairs(hwids) do
-            if entry.key == validKey.code and entry.hwid ~= hwid then
-                player:Kick("❌ HWID không hợp lệ!")
-                return
-            end
-        end
+local keyData = findKey(key)
 
-        -- Nếu HWID chưa được lưu, thêm vào GitHub
-        local newEntry = { key = validKey.code, hwid = hwid }
-        table.insert(hwids, newEntry)
+if not keyData then
+    game.Players.LocalPlayer:Kick("Key không hợp lệ!")
+    return
+end
 
-        -- 🔹 Cập nhật hwids.json trên GitHub
-        local newContent = HttpService:JSONEncode(hwids)
-        local encodedContent = syn and syn.crypt.base64.encode(newContent) or newContent
-
-        local body = {
-            message = "🔄 Update HWID for key: " .. validKey.code,
-            content = encodedContent,
-            sha = fetchJson("https://api.github.com/repos/" .. githubRepo .. "/contents/" .. hwidsFile).sha
-        }
-
-        local headers = {
-            ["Authorization"] = "token " .. githubToken,
-            ["Content-Type"] = "application/json"
-        }
-
-        if http and http.request then
-            http.request({
-                Url = "https://api.github.com/repos/" .. githubRepo .. "/contents/" .. hwidsFile,
-                Method = "PUT",
-                Headers = headers,
-                Body = HttpService:JSONEncode(body)
-            })
-            print("✅ HWID đã được lưu trên GitHub:", hwid)
-        else
-            print("⚠️ Executor không hỗ trợ `http.request`, không thể cập nhật HWID!")
-        end
-
-        -- 🔹 Key hợp lệ -> Load script chính
-        print("✅ Key hợp lệ, chạy script...")
-        getgenv().Language = "English"
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
-    else
-        player:Kick("❌ Key không hợp lệ!")
-    end
+if keyData.hwid == nil then
+    -- Nếu key chưa có HWID, gán device_id vào
+    keyData.hwid = device_id
+    -- Cần API để cập nhật file JSON
+    print("Key hợp lệ! Gán HWID mới:", device_id)
 else
-    player:Kick("❌ Không thể tải danh sách key từ GitHub!")
+    if keyData.hwid ~= device_id then
+        game.Players.LocalPlayer:Kick("Invalid Hwid")
+        return
+    end
 end
+
+print("Key hợp lệ! Đang chạy script chính...")
+getgenv().Language = "English"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()

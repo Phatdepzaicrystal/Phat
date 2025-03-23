@@ -3,11 +3,12 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 -- 🔥 Thông tin GitHub
-local GitHubToken = "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" 
+local GitHubToken = "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" 
 local RepoOwner = "Phatdepzaicrystal"
 local RepoName = "Key"
 local KeyFilePath = "keys.json"
-local KeyFileURL = "https://api.github.com/repos/" .. RepoOwner .. "/" .. RepoName .. "/contents/" .. KeyFilePath
+local RawKeyFileURL = "https://raw.githubusercontent.com/" .. RepoOwner .. "/" .. RepoName .. "/main/" .. KeyFilePath
+local APIKeyFileURL = "https://api.github.com/repos/" .. RepoOwner .. "/" .. RepoName .. "/contents/" .. KeyFilePath
 
 -- 🔥 Thông tin Webhook
 local DiscordWebhook = "https://discord.com/api/webhooks/1352103223837720687/_Y7y3ciBgDTCd7IykQQTy9X9wEjAjD_uZ9y9I5ZYLmLmvn1O7lhBFFWLhtuy3vD87zbP"
@@ -16,15 +17,10 @@ local DiscordWebhook = "https://discord.com/api/webhooks/1352103223837720687/_Y7
 local HWID = gethwid and gethwid() or "Unknown"
 local UserId = tostring(LocalPlayer.UserId)
 
--- 🛠️ Lấy danh sách key từ GitHub (có token)
+-- 🛠️ Lấy danh sách key từ GitHub
 local function GetKeys()
-    local headers = {
-        ["Authorization"] = "token " .. GitHubToken,
-        ["Accept"] = "application/vnd.github.v3.raw"
-    }
-
     local success, response = pcall(function()
-        return HttpService:GetAsync(KeyFileURL, false, headers)
+        return HttpService:GetAsync(RawKeyFileURL, true)
     end)
 
     if success then
@@ -35,7 +31,7 @@ local function GetKeys()
     end
 end
 
--- 🛠️ Cập nhật HWID vào GitHub (nếu HWID chưa có)
+-- 🛠️ Cập nhật HWID vào GitHub nếu chưa có
 local function UpdateKeys(keys)
     local headers = {
         ["Authorization"] = "token " .. GitHubToken,
@@ -43,24 +39,24 @@ local function UpdateKeys(keys)
         ["Content-Type"] = "application/json"
     }
 
-    local updatedKeys = HttpService:JSONEncode(keys)
-    local shaResponse = HttpService:GetAsync(KeyFileURL, false, headers)
+    local encodedKeys = HttpService:JSONEncode(keys)
+    local shaResponse = HttpService:GetAsync(APIKeyFileURL, false, headers)
     local sha = HttpService:JSONDecode(shaResponse).sha
 
     local data = {
         message = "Update HWID for user",
-        content = HttpService:JSONEncode(updatedKeys):gsub(".", function(c)
+        content = HttpService:JSONEncode(keys):gsub(".", function(c)
             return string.format("%02X", string.byte(c))
         end),
         sha = sha
     }
 
     local success, response = pcall(function()
-        return HttpService:PostAsync(KeyFileURL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson, false, headers)
+        return HttpService:PostAsync(APIKeyFileURL, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson, false, headers)
     end)
 
     if success then
-        print("✅ Cập nhật HWID thành công!")
+        print("✅ Cập nhật HWID thành công trên GitHub!")
     else
         warn("⚠️ Lỗi cập nhật HWID!")
     end

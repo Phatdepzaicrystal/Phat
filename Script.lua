@@ -1,4 +1,4 @@
-local keysJsonUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/keys.json"
+local keysJsonUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 
 local success, keysData = pcall(function()
     return loadstring("return " .. game:HttpGet(keysJsonUrl))()

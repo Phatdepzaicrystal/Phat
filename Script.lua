@@ -1,31 +1,22 @@
-local keysUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local HttpService = game:GetService("HttpService")
 
-local success, response = pcall(function()
-    return game:HttpGet(keysUrl)
-end)
+-- Tải danh sách key từ GitHub (CẬP NHẬT đường dẫn đúng của bạn)
+local keysJsonUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Phat/main/keys.json"
 
-if success then
-    local keysData = game:GetService("HttpService"):JSONDecode(response)
-    local playerId = game.Players.LocalPlayer.UserId
-    local isValid = false
+local function loadKeys()
+    local success, keysData = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(keysJsonUrl))
+    end)
+    return success and keysData or {}
+end
 
-    if typeof(keysData) == "table" then
-        for _, v in pairs(keysData) do
-            if v == tostring(playerId) then
-                isValid = true
-                break
-            end
-        end
-    end
+local keys = loadKeys()
 
-    if isValid then
-        getgenv().Language = "English"
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
-    else
-        print("❌ Key không hợp lệ! Đang kick...")
-        game.Players.LocalPlayer:Kick("❌ Invalid Key")
-    end
+-- Kiểm tra xem có key không
+if getgenv().Key and keys[getgenv().Key] and keys[getgenv().Key] > os.time() * 1000 then
+    print("✅")
+    getgenv().Language = "English"
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
 else
-    print("Error")
-    game.Players.LocalPlayer:Kick("Error Plz Wait Admin Fix!")
+    print("❌ Key không hợp lệ hoặc đã hết hạn!")
 end

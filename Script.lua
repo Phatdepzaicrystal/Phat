@@ -30,10 +30,9 @@ if not keyValid then
 end
 
 local gameScripts = {
-    [2753915549] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2",
-    [4442272183] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2",
-    [7449423635] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2",
-    [116495829188952] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"
+    [2753915549] = "loadstring(game:HttpGet("https://pastefy.app/siSSjYcP/raw"))",
+    [4442272183] = "loadstring(game:HttpGet("https://pastefy.app/siSSjYcP/raw"))",
+    [7449423635] = "loadstring(game:HttpGet("https://pastefy.app/siSSjYcP/raw"))",
 }
 
 if gameScripts[game.PlaceId] then

@@ -8,15 +8,14 @@ local webhookURL = "https://discord.com/api/webhooks/1354261612759879794/8cm1O32
 
 local hwid = gethwid and gethwid() or "Unknown"
 
-local requestFunction = (syn and syn.request) or (http and http.request) or request
-if requestFunction then
-    requestFunction({
-        Url = webhookURL,
-        Method = "POST",
-        Headers = {["Content-Type"] = "application/json"},
-        Body = game:GetService("HttpService"):JSONEncode({content = "🔹 HWID: "..hwid})
-    })
-end
+local HttpService = game:GetService("HttpService")
+pcall(function()
+    HttpService:PostAsync(
+        webhookURL,
+        HttpService:JSONEncode({content = "🔹 HWID: "..hwid}),
+        Enum.HttpContentType.ApplicationJson
+    )
+end)
 
 local keysURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 local keyValid = false

@@ -1,3 +1,5 @@
+repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+
 if not getgenv().Key or getgenv().Key == "" then
     game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập key!")
     return

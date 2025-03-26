@@ -14552,55 +14552,98 @@ spawn(function()
     end
 end);
 
-local v176 = Tabs.Volcanic:AddToggle("ToggleCollectBone", {
-    Title = "Collect Bone",
-    Description = "",
-    Default = false
-});
-v176:OnChanged(function(v414)
-    _G.AutoCollectBone = v414;
-end);
-spawn(function()
-    while wait() do
-        if _G.AutoCollectBone then
-            for v820, v821 in pairs(workspace:GetDescendants()) do
-                if (v821:IsA("BasePart") and (v821.Name == "DinoBone")) then
-                    Tween2(CFrame.new(v821.Position));
-                end
-            end
-        end
+local v176 =
+    Tabs.Volcanic:AddToggle(
+    "ToggleCollectBone",
+    {
+        Title = "Collect Bone",
+        Description = "",
+        Default = false
+    }
+)
+v176:OnChanged(
+    function(v414)
+        _G.AutoCollectBone = v414
     end
-end);
-
-local v177 = Tabs.Volcanic:AddToggle("ToggleCollectEgg", {
-    Title = "Collect Egg",
-    Description = "",
-    Default = false
-});
-v177:OnChanged(function(v415)
-    _G.AutoCollectEgg = v415;
-end);
-spawn(function()
-    while wait() do
-        if _G.AutoCollectEgg then
-            local v758 = workspace.Map.PrehistoricIsland.Core.SpawnedDragonEggs:GetChildren();
-            if (# v758 > 0) then
-                local v886 = v758[math.random(1, # v758)];
-                if (v886:IsA("Model") and v886.PrimaryPart) then
-                    Tween2(v886.PrimaryPart.CFrame);
-                    local v1127 = game.Players.LocalPlayer.Character.HumanoidRootPart.Position;
-                    local v1128 = v886.PrimaryPart.Position;
-                    local v1129 = (v1127 - v1128).Magnitude;
-                    if (v1129 <= 1) then
-                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game);
-                        wait(1.5);
-                        game:GetService("VirtualInputManager"):SendKeyEvent(false, "E", false, game);
+)
+spawn(
+    function()
+        while wait() do
+            if _G.AutoCollectBone then
+                for v820, v821 in pairs(workspace:GetDescendants()) do
+                    if (v821:IsA("BasePart") and (v821.Name == "DinoBone")) then
+                        Tween2(CFrame.new(v821.Position))
                     end
                 end
             end
         end
     end
-end);
+)
+
+local v177 =
+    Tabs.Volcanic:AddToggle(
+    "ToggleCollectEgg",
+    {
+        Title = "Collect Egg",
+        Description = "",
+        Default = false
+    }
+)
+v177:OnChanged(
+    function(v415)
+        _G.AutoCollectEgg = v415
+    end
+)
+spawn(
+    function()
+        while wait() do
+            if _G.AutoCollectEgg then
+                local v758 = workspace.Map.PrehistoricIsland.Core.SpawnedDragonEggs:GetChildren()
+                if (#v758 > 0) then
+                    local v886 = v758[math.random(1, #v758)]
+                    if (v886:IsA("Model") and v886.PrimaryPart) then
+                        Tween2(v886.PrimaryPart.CFrame)
+                        local v1127 = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                        local v1128 = v886.PrimaryPart.Position
+                        local v1129 = (v1127 - v1128).Magnitude
+                        if (v1129 <= 1) then
+                            game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                            wait(1.5)
+                            game:GetService("VirtualInputManager"):SendKeyEvent(false, "E", false, game)
+                        end
+                    end
+                end
+            end
+        end
+    end
+)
+
+local DracoRace =
+    Tabs.Volcanic:AddToggle(
+    "DracoRace",
+    {
+        Title = "Tp to Draco Trial Door",
+        Description = "",
+        Default = false
+    }
+)
+DracoRace:OnChanged(
+    function(Value)
+        _G.AutoTrialTeleport = Value
+    end
+)
+spawn(
+    function()
+        while wait() do
+            if _G.AutoTrialTeleport then
+                local Prehistoric = workspace.Map.PrehistoricIsland:FindFirstChild("TrialTeleport")
+                if (Prehistoric and Prehistoric:IsA("Part")) then
+                    Tween2(CFrame.new(Prehistoric.Position))
+                end
+            end
+        end
+    end
+)
 
 local FarmPri = Tabs.S:AddSection("Setting For Volcano Event")
 

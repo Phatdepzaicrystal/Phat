@@ -1,21 +1,10 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
+-- Yêu cầu nhập Key nếu chưa có
 if not getgenv().Key or getgenv().Key == "" then
     game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập key!")
     return
 end
-local webhookURL = "https://discord.com/api/webhooks/1354261612759879794/8cm1O32qaBy1znxdw6UfRboAMvGKGQPMOfDUs3uroUxjuM7gwdMjECPxLJolUzFodTGs"
-
-local hwid = gethwid and gethwid() or "Unknown"
-
-local HttpService = game:GetService("HttpService")
-pcall(function()
-    HttpService:PostAsync(
-        webhookURL,
-        HttpService:JSONEncode({content = "🔹 HWID: "..hwid}),
-        Enum.HttpContentType.ApplicationJson
-    )
-end)
 
 local keysURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 local keyValid = false
@@ -25,7 +14,8 @@ local success, response = pcall(function()
 end)
 
 if success and response then
-    local keysData = game:GetService("HttpService"):JSONDecode(response)
+    local HttpService = game:GetService("HttpService")
+    local keysData = HttpService:JSONDecode(response)
     for k, v in pairs(keysData) do
         if k == getgenv().Key and v > os.time() * 1000 then  
             keyValid = true
@@ -39,11 +29,18 @@ if not keyValid then
     return
 end
 
-if game.PlaceId == 2753915549 then 
-    getgenv().Language = "English"
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
-elseif game.PlaceId == 116495829188952 then 
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"))()
+local gameScripts = {
+    [2753915549] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2",
+    [4442272183] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2",
+    [7449423635] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2",
+    [116495829188952] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"
+}
+
+if gameScripts[game.PlaceId] then
+    if game.PlaceId ~= 116495829188952 then
+        getgenv().Language = "English"
+    end
+    loadstring(game:HttpGet(gameScripts[game.PlaceId]))()
 else
-    game.Players.LocalPlayer:Kick("⚠️ Not Support!")
+    game.Players.LocalPlayer:Kick("⚠️Not Support !")
 end

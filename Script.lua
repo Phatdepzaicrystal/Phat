@@ -8,12 +8,15 @@ local webhookURL = "https://discord.com/api/webhooks/1354261612759879794/8cm1O32
 
 local hwid = gethwid and gethwid() or "Unknown"
 
-syn.request({
-    Url = webhookURL,
-    Method = "POST",
-    Headers = {["Content-Type"] = "application/json"},
-    Body = game:GetService("HttpService"):JSONEncode({content = "🔹 HWID: "..hwid})
-})
+local requestFunction = (syn and syn.request) or (http and http.request) or request
+if requestFunction then
+    requestFunction({
+        Url = webhookURL,
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = game:GetService("HttpService"):JSONEncode({content = "🔹 HWID: "..hwid})
+    })
+end
 
 local keysURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 local keyValid = false
@@ -25,7 +28,7 @@ end)
 if success and response then
     local keysData = game:GetService("HttpService"):JSONDecode(response)
     for k, v in pairs(keysData) do
-        if k == getgenv().Key and v > os.time() * 1000 then  -- Check key hợp lệ & chưa hết hạn
+        if k == getgenv().Key and v > os.time() * 1000 then  
             keyValid = true
             break
         end
@@ -37,12 +40,11 @@ if not keyValid then
     return
 end
 
--- Chạy script theo game ID
-if game.PlaceId == 275391554 then  -- Blox Fruits
+if game.PlaceId == 275391554 then 
     getgenv().Language = "English"
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
-elseif game.PlaceId == 116495829188952 then  -- Dead Rail
+elseif game.PlaceId == 116495829188952 then 
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"))()
 else
-    game.Players.LocalPlayer:Kick("⚠️Not Support !")
+    game.Players.LocalPlayer:Kick("⚠️ Not Support!")
 end

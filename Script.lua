@@ -39,7 +39,7 @@ if not keyValid then
     return
 end
 
-if game.PlaceId == 275391554 then 
+if game.PlaceId == 2753915549 then 
     getgenv().Language = "English"
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
 elseif game.PlaceId == 116495829188952 then 

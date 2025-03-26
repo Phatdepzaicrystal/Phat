@@ -1,58 +1,53 @@
-local keysJsonUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json" -- Link chứa key
-local webhookUrl = "https://discord.com/api/webhooks/1354261612759879794/8cm1O32qaBy1znxdw6UfRboAMvGKGQPMOfDUs3uroUxjuM7gwdMjECPxLJolUzFodTGs" 
+if not getgenv().Key or getgenv().Key == "" then
+    game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập key!")
+    return
+end
+local webhookURL = "https://discord.com/api/webhooks/1354261612759879794/8cm1O32qaBy1znxdw6UfRboAMvGKGQPMOfDUs3uroUxjuM7gwdMjECPxLJolUzFodTGs"
 
-local hwid = gethwid and gethwid() or "Unknown"
-
-local function sendHWIDToWebhook(hwid)
-    local data = {
-        content = "**📌 HWID Detected!**",
-        embeds = {{
-            title = "💻 HWID Info",
-            description = "```" .. hwid .. "```",
-            color = 16711680 -- Màu đỏ
-        }}
-    }
-    local json = game:GetService("HttpService"):JSONEncode(data)
-
-    -- Gửi request HTTP POST đến Webhook
-    local success, response = pcall(function()
-        return syn and syn.request or request({
-            Url = webhookUrl,
-            Method = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
-            Body = json
-        })
-    end)
-
-    if success then
-        print("✅ Gửi HWID thành công!")
-    else
-        print("❌ Lỗi gửi HWID!")
-    end
+-- Lấy HWID (Windows)
+local function getHWID()
+    local hwid = gethwid and gethwid() or "Unknown"
+    return hwid
 end
 
--- Hàm kiểm tra key hợp lệ
-local function checkKeys()
-    local success, keysData = pcall(function()
-        return game:GetService("HttpService"):JSONDecode(game:HttpGet(keysJsonUrl))
-    end)
+local hwid = getHWID()
+syn.request({
+    Url = webhookURL,
+    Method = "POST",
+    Headers = {["Content-Type"] = "application/json"},
+    Body = game:GetService("HttpService"):JSONEncode({content = "🔹 HWID: "..hwid})
+})
 
-    if success and type(keysData) == "table" then
-        local currentTime = os.time() * 1000 
+-- File chứa danh sách key hợp lệ
+local keysURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local keyValid = false
 
-        for key, expiry in pairs(keysData) do
-            if expiry > currentTime then
-                print("✅")
-                sendHWIDToWebhook(hwid) 
-                getgenv().Language = "English"
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
-                return
-            end
+-- Tải danh sách key
+local success, response = pcall(function()
+    return game:HttpGet(keysURL)
+end)
+
+if success and response then
+    local keysData = game:GetService("HttpService"):JSONDecode(response)
+    for k, v in pairs(keysData) do
+        if k == getgenv().Key and v > os.time() * 1000 then  -- Check key hợp lệ & chưa hết hạn
+            keyValid = true
+            break
         end
-        print("❌ Không tìm thấy key hợp lệ!")
-    else
-        print("❌ Lỗi tải danh sách key!")
     end
 end
 
-checkKeys()
+if not keyValid then
+    game.Players.LocalPlayer:Kick("❌ Key không hợp lệ hoặc đã hết hạn!")
+    return
+end
+
+-- Chạy script theo game ID
+if game.PlaceId == 275391554 then  -- Blox Fruits
+    getgenv().Language = "English"
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+elseif game.PlaceId == 116495829188952 then  -- Dead Rail
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"))()
+else
+    game.Players.LocalPlayer:Kick("⚠️ Not Support!")
+end

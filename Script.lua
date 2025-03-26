@@ -6,13 +6,8 @@ if not getgenv().Key or getgenv().Key == "" then
 end
 local webhookURL = "https://discord.com/api/webhooks/1354261612759879794/8cm1O32qaBy1znxdw6UfRboAMvGKGQPMOfDUs3uroUxjuM7gwdMjECPxLJolUzFodTGs"
 
--- Lấy HWID (Windows)
-local function getHWID()
-    local hwid = gethwid and gethwid() or "Unknown"
-    return hwid
-end
+local hwid = gethwid and gethwid() or "Unknown"
 
-local hwid = getHWID()
 syn.request({
     Url = webhookURL,
     Method = "POST",
@@ -20,11 +15,9 @@ syn.request({
     Body = game:GetService("HttpService"):JSONEncode({content = "🔹 HWID: "..hwid})
 })
 
--- File chứa danh sách key hợp lệ
 local keysURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 local keyValid = false
 
--- Tải danh sách key
 local success, response = pcall(function()
     return game:HttpGet(keysURL)
 end)
@@ -51,5 +44,5 @@ if game.PlaceId == 275391554 then  -- Blox Fruits
 elseif game.PlaceId == 116495829188952 then  -- Dead Rail
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"))()
 else
-    game.Players.LocalPlayer:Kick("⚠️ Not Support!")
+    game.Players.LocalPlayer:Kick("⚠️Not Support !")
 end

@@ -1,76 +1,44 @@
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local http = game:GetService("HttpService")
 
-local HWID = gethwid and gethwid() or "Unknown" -- Lấy HWID
-local KeyFileURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/main/keys.json" -- 🔥 Link chứa key
-local DiscordWebhook = "https://discord.com/api/webhooks/1352103223837720687/_Y7y3ciBgDTCd7IykQQTy9X9wEjAjD_uZ9y9I5ZYLmLmvn1O7lhBFFWLhtuy3vD87zbP" -- 🔥 Webhook Discord
+-- Cấu hình API của bạn
+local api_url = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev"  -- Thay bằng URL API thật
+local hwid = gethwid and gethwid() or "Unknown"
 
--- Tải danh sách key từ GitHub
-local function GetKeys()
-    local success, response = pcall(function()
-        return HttpService:GetAsync(KeyFileURL)
-    end)
+-- Lấy key từ GitHub
+local github_keys_url = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local key
 
-    if success then
-        local keysData = HttpService:JSONDecode(response)
-        return keysData
+local success, err = pcall(function()
+    local response = http:GetAsync(github_keys_url, true)
+    local keys = http:JSONDecode(response)
+    
+    for k, v in pairs(keys) do
+        key = k -- Lấy Key đầu tiên từ danh sách GitHub
+        break
+    end
+end)
+
+if not success or not key then
+    print("⚠️ Không thể lấy key từ GitHub:", err)
+    return
+end
+
+-- Gửi yêu cầu kiểm tra Key & HWID
+local response
+success, err = pcall(function()
+    response = http:GetAsync(api_url .. "/Checkkey?key=" .. key .. "&hwid=" .. hwid, true)
+end)
+
+if success then
+    local data = http:JSONDecode(response)
+    if data["status"] == "true" and data["Key_Status"] then
+        print("✅ Key hợp lệ, chạy script...")
+        getgenv().Language = "English"
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
     else
-        warn("⚠️ Lỗi tải danh sách key từ GitHub!")
-        return nil
+        print("❌ Key không hợp lệ hoặc HWID bị blacklist:", data["message"])
+        game.Players.LocalPlayer:Kick(data["message"])
     end
-end
-
--- Kiểm tra xem HWID đã tồn tại trong danh sách key chưa
-local function CheckKey()
-    local keys = GetKeys()
-    if not keys then return false end
-
-    for _, entry in pairs(keys) do
-        if entry.HWID == HWID then
-            print("✅ Key hợp lệ! Tiến hành gửi HWID lên webhook...")
-            return entry.Key -- Trả về Key nếu tìm thấy HWID
-        end
-    end
-    return nil
-end
-
--- Gửi thông tin HWID lên Discord Webhook
-local function SendToWebhook(verifiedKey)
-    local data = {
-        content = "**:key: Yêu cầu Redeem Key**\n",
-        embeds = {{
-            title = "Thông tin người dùng",
-            fields = {
-                { name = ":small_blue_diamond: HWID", value = HWID, inline = true },
-                { name = ":id: User ID", value = tostring(LocalPlayer.UserId), inline = true },
-                { name = ":bust_in_silhouette: Username", value = LocalPlayer.Name, inline = true },
-                { name = ":key: Key Được Duyệt", value = verifiedKey, inline = true }
-            },
-            color = 16711680
-        }}
-    }
-
-    local request = syn and syn.request or http_request or request
-    if request then
-        request({
-            Url = DiscordWebhook,
-            Method = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
-            Body = HttpService:JSONEncode(data)
-        })
-    end
-end
-
--- Chạy script nếu key hợp lệ
-local verifiedKey = CheckKey()
-if verifiedKey then
-    SendToWebhook(verifiedKey)
-    print("✅ Key hợp lệ! Chạy script...")
-
-    -- 🔥 Chạy script
-    getgenv().Language = "English"
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
 else
-    print("❌ Key không hợp lệ hoặc HWID chưa được đăng ký!")
+    print("⚠️ Lỗi kết nối API:", err)
 end

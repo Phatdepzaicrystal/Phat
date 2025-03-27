@@ -15,10 +15,10 @@ local hwidRegistered = false
 
 -- 🚀 Lấy HWID của thiết bị
 local function getHWID()
-    return game:GetService("RbxAnalyticsService"):GetClientId()
+    return gethwid and gethwid() or "Unknown"
 end
 
-local HWID = gethwid and gethwid() or "Unknown"
+local HWID = getHWID()
 
 -- 📌 Kiểm tra Key
 local function checkKey()

@@ -8,22 +8,11 @@ if not isfolder("VxezeHub") then
     makefolder("VxezeHub")
 end
 
--- 📄 Đường dẫn file lưu HWID
+-- 📄 Đường dẫn file lưu HWID & Key
 local hwid_path = "VxezeHub/hwid.txt"
+local key_path = "VxezeHub/key.txt"
 
--- 🔍 Kiểm tra nếu HWID đã lưu trước đó
-if isfile(hwid_path) then
-    local saved_hwid = readfile(hwid_path)
-    if saved_hwid ~= hwid then
-        game.Players.LocalPlayer:Kick("❌ HWID không khớp! Vui lòng liên hệ hỗ trợ.")
-        return
-    end
-else
-    -- 📝 Lưu HWID vào file nếu chưa có
-    writefile(hwid_path, hwid)
-end
-
--- 🔑 Kiểm tra Key từ GitHub
+-- 🔑 Kiểm tra Key nhập vào
 local key = getgenv().Key
 if not key or key == "" then
     game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập Key!")
@@ -41,16 +30,34 @@ end)
 if success and response then
     local HttpService = game:GetService("HttpService")
     local keysData = HttpService:JSONDecode(response)
-    if keysData[key] and keysData[key] == hwid then
-        print("✅ Key hợp lệ và khớp HWID:", hwid)
+
+    -- Nếu file chưa tồn tại, tự động lưu HWID & Key
+    if not isfile(hwid_path) then
+        if keysData[key] then
+            writefile(hwid_path, hwid)
+            writefile(key_path, key)
+            print("✅ Đã lưu HWID & Key lần đầu:", hwid, key)
+        else
+            game.Players.LocalPlayer:Kick("❌ Key không hợp lệ! Vui lòng kiểm tra lại.")
+            return
+        end
     else
-        game.Players.LocalPlayer:Kick("❌ Key không hợp lệ hoặc không khớp HWID!")
-        return
+        -- Kiểm tra HWID & Key đã lưu
+        local saved_hwid = readfile(hwid_path)
+        local saved_key = readfile(key_path)
+        if saved_hwid ~= hwid then
+            game.Players.LocalPlayer:Kick("❌ HWID không khớp! Vui lòng liên hệ hỗ trợ.")
+            return
+        end
+        if saved_key ~= key or not keysData[key] then
+            game.Players.LocalPlayer:Kick("❌ Key không hợp lệ hoặc không khớp HWID!")
+            return
+        end
     end
 else
     game.Players.LocalPlayer:Kick("🚫 Không thể kết nối đến máy chủ kiểm tra Key!")
     return
 end
-
+------Run Main Script-----------
 getgenv().Language = "English"
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()

@@ -1,28 +1,30 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
+-- 🛠️ Lấy HWID từ executor
 local hwid = gethwid and gethwid() or "Unknown"
-local key = getgenv().Key
 
-if not key or key == "" then
-    game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập key!")
-    return
+-- 🗂️ Tạo thư mục nếu chưa có
+if not isfolder("VxezeHub") then
+    makefolder("VxezeHub")
 end
 
-local httpService = game:GetService("HttpService")
-local api_url = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/check_key?hwid=" .. hwid .. "&key=" .. key
+-- 📄 Đường dẫn file lưu HWID
+local file_path = "VxezeHub/hwid.txt"
 
-local success, response = pcall(function()
-    return httpService:GetAsync(api_url)
-end)
-
-if success then
-    local json = httpService:JSONDecode(response)
-    if json.status == "true" then
-        getgenv().Language = "English"
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
-    else
-        game.Players.LocalPlayer:Kick("❌ " .. json.message)
+-- 🔍 Kiểm tra nếu HWID đã lưu trước đó
+if isfile(file_path) then
+    local saved_hwid = readfile(file_path)
+    if saved_hwid ~= hwid then
+        game.Players.LocalPlayer:Kick("❌ HWID không khớp! Vui lòng liên hệ hỗ trợ.")
+        return
     end
 else
-    game.Players.LocalPlayer:Kick("🚫 Không thể kết nối đến máy chủ kiểm tra key!")
+    -- 📝 Lưu HWID vào file nếu chưa có
+    writefile(file_path, hwid)
 end
+
+-- ✅ Nếu HWID hợp lệ, tiếp tục chạy script
+print("✅ HWID hợp lệ:")
+
+getgenv().Language = "English"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()

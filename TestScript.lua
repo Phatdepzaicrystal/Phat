@@ -1,3 +1,5 @@
+repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+
 local hwid = gethwid and gethwid() or "Unknown"
 local key = getgenv().Key
 
@@ -16,14 +18,11 @@ end)
 if success then
     local json = httpService:JSONDecode(response)
     if json.status == "true" then
-        -- ✅ Key hợp lệ -> Chạy script
         getgenv().Language = "English"
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
     else
-        -- ❌ Key không hợp lệ -> Kick người chơi
         game.Players.LocalPlayer:Kick("❌ " .. json.message)
     end
 else
-    -- 🚫 Lỗi kết nối đến API
     game.Players.LocalPlayer:Kick("🚫 Không thể kết nối đến máy chủ kiểm tra key!")
 end

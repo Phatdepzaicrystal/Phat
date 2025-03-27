@@ -1,63 +1,56 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
--- 🛠️ Lấy HWID từ executor
+-- 📂 Thư mục & file lưu trữ
+local folder = "VxezeHub"
+local hwid_file = folder.."/hwid.txt"
+local key_file = folder.."/key.txt"
+
+-- ✅ Tạo thư mục nếu chưa có
+if not isfolder(folder) then makefolder(folder) end
+
+-- 🔐 Lấy HWID
 local hwid = gethwid and gethwid() or "Unknown"
 
--- 🗂️ Tạo thư mục nếu chưa có
-if not isfolder("VxezeHub") then
-    makefolder("VxezeHub")
+-- 💾 Kiểm tra & lưu HWID vào file nếu chưa có
+if not isfile(hwid_file) then
+    writefile(hwid_file, hwid)
 end
 
--- 📄 Đường dẫn file lưu HWID & Key
-local hwid_path = "VxezeHub/hwid.txt"
-local key_path = "VxezeHub/key.txt"
-
--- 🔑 Kiểm tra Key nhập vào
+-- 🔑 Kiểm tra & lưu Key vào file
 local key = getgenv().Key
 if not key or key == "" then
-    game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập Key!")
+    game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập key!")
     return
 end
+writefile(key_file, key)
 
--- 🌍 URL chứa danh sách Key trên GitHub
-local key_url = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+-- 🔗 Link chứa danh sách key từ GitHub
+local keysURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local keyValid = false
 
--- 🛠️ Lấy dữ liệu Key từ GitHub
+-- 📡 Gửi yêu cầu HTTP để lấy key từ GitHub
+local httpService = game:GetService("HttpService")
 local success, response = pcall(function()
-    return game:HttpGet(key_url)
+    return game:HttpGet(keysURL)
 end)
 
+-- 🔍 Kiểm tra Key hợp lệ & khớp HWID
 if success and response then
-    local HttpService = game:GetService("HttpService")
-    local keysData = HttpService:JSONDecode(response)
-
-    -- Nếu file chưa tồn tại, tự động lưu HWID & Key
-    if not isfile(hwid_path) then
-        if keysData[key] then
-            writefile(hwid_path, hwid)
-            writefile(key_path, key)
-            print("✅ Đã lưu HWID & Key lần đầu:", hwid, key)
-        else
-            game.Players.LocalPlayer:Kick("❌ Key không hợp lệ! Vui lòng kiểm tra lại.")
-            return
-        end
-    else
-        -- Kiểm tra HWID & Key đã lưu
-        local saved_hwid = readfile(hwid_path)
-        local saved_key = readfile(key_path)
-        if saved_hwid ~= hwid then
-            game.Players.LocalPlayer:Kick("❌ HWID không khớp! Vui lòng liên hệ hỗ trợ.")
-            return
-        end
-        if saved_key ~= key or not keysData[key] then
-            game.Players.LocalPlayer:Kick("❌ Key không hợp lệ hoặc không khớp HWID!")
-            return
+    local keysData = httpService:JSONDecode(response)
+    for k, v in pairs(keysData) do
+        if k == key and v.hwid == hwid and v.expire > os.time() then  
+            keyValid = true
+            break
         end
     end
-else
-    game.Players.LocalPlayer:Kick("🚫 Không thể kết nối đến máy chủ kiểm tra Key!")
+end
+
+-- ❌ Kick nếu Key không hợp lệ hoặc không khớp HWID
+if not keyValid then
+    game.Players.LocalPlayer:Kick("❌ Key không hợp lệ hoặc không khớp HWID!")
     return
 end
-------Run Main Script-----------
+
+-- 🚀 Chạy Script chính nếu Key hợp lệ
 getgenv().Language = "English"
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()

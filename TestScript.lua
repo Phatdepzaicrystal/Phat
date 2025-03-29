@@ -1,3 +1,5 @@
+repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+
 local http = game:HttpGet
 local player = game.Players.LocalPlayer
 local hwidApi = "https://c36d7cfb-6f3a-4e9a-841d-4e7bcdc7e592-00-33ro0chwsdbwl.kirk.replit.dev/storehwid" 
